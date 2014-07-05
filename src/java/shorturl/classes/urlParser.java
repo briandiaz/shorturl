@@ -47,13 +47,13 @@ public class urlParser {
 
     public static String EncodeUrl(String url) {
         String encoded = Base64.encode(url.getBytes());
-        return encoded;
+        return encoded.substring(0, 10);
     }
-
-    public static String DecodeUrl(String url) {
-        byte[] decoded = Base64.decode(url);
-        return new String(decoded);
-    }
+    /*
+     public static String DecodeUrl(String url) {
+     byte[] decoded = Base64.decode(url);
+     return new String(decoded);
+     }*/
 
     public static void main(String[] args) throws MalformedURLException {
         String vinculo = "http://www.pucmmsti.edu.do/domingo/sabado/index.jsp";

@@ -34,25 +34,24 @@ public class createURL extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    urlJPA UrlJ = urlJPA.getInstancia();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            CreateUrl(request,response);
+        CreateUrl(request, response);
     }
 
-    protected void CreateUrl(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException {
+    protected void CreateUrl(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException, IOException {
         HttpSession session = request.getSession();
         //si el usuario es valido
         if (urlParser.validateUrl(request)) {
             String link = request.getParameter("url");
             String encoded = urlParser.EncodeUrl(link);
-            User usr = new User();
-            usr.setEmail("1212");
-            usr.setId(1);
-            usr.setPassword("franl");
-            usr.setPhoto("link");
-            usr.setUsername("deamon");
-            
-            
+            Url uri = new Url(1);
+            uri.setUrl(link);
+            uri.setShortUrl(encoded);
+            // UrlJ.persist(uri);
+            response.sendRedirect("./showUrl.jsp?url="+"http://localhost:8080/shorturl"+encoded);
             System.out.println(link);
 
         }

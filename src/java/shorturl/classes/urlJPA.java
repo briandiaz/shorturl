@@ -21,8 +21,9 @@ import shorturl.entities.User;
  * @author frangel
  */
 public class urlJPA {
-
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("UsoJPALocalPU");
+   
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("shorturlPU");
+    
     private static urlJPA urlJPA;
 
     private urlJPA() {
