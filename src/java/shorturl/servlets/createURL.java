@@ -50,8 +50,8 @@ public class createURL extends HttpServlet {
             Url uri = new Url(1);
             uri.setUrl(link);
             uri.setShortUrl(encoded);
-            // UrlJ.persist(uri);
-            response.sendRedirect("./showUrl.jsp?url="+"http://localhost:8080/shorturl"+encoded);
+             UrlJ.persist(uri);
+            response.sendRedirect("./showUrl.jsp?url="+"http://localhost:8080/shorturl/"+encoded);
             System.out.println(link);
 
         }
