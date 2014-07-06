@@ -15,6 +15,7 @@ import com.sun.xml.wss.impl.misc.Base64;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 
 public class urlParser {
@@ -27,6 +28,8 @@ public class urlParser {
     private static String query;
     private static String filename;
     private static String ref;
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static Random rnd = new Random();
 
     public boolean VirusScan(String filename) {
         return true;
@@ -48,6 +51,14 @@ public class urlParser {
     public static String EncodeUrl(String url) {
         String encoded = Base64.encode(url.getBytes());
         return encoded.substring(encoded.length() - 15, encoded.length() - 5);
+    }
+
+    public static String randomString(int len) {
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        }
+        return sb.toString();
     }
     /*
      public static String DecodeUrl(String url) {

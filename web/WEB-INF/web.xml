@@ -1,12 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <filter>
+        <filter-name>ParseURL</filter-name>
+        <filter-class>shorturl.filtros.ParseURL</filter-class>
+        <init-param>
+            <param-name>l</param-name>
+            <param-value>*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>ParseURL</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>createURL</servlet-name>
         <servlet-class>shorturl.servlets.createURL</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateUser</servlet-name>
+        <servlet-class>shorturl.servlets.CreateUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DestroyUser</servlet-name>
+        <servlet-class>shorturl.servlets.DestroyUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Session</servlet-name>
+        <servlet-class>shorturl.servlets.Session</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>createURL</servlet-name>
         <url-pattern>/createURL</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateUser</servlet-name>
+        <url-pattern>/CreateUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DestroyUser</servlet-name>
+        <url-pattern>/DestroyUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Session</servlet-name>
+        <url-pattern>/Session</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

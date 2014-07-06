@@ -20,27 +20,30 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">This is your Short URL </h3>
                 </div>
-                
-                  <%
-                        // ContextProduct context = new ContextProduct();
-                        ContextURL context = new ContextURL();
-                        List<Url> urls = context.getAllUrls(request.getServletContext());
-                       
-                        for (Url link : urls) {
-                           //System.out.print(link.getShortUrl()); 
-                               
-                    %>
-                
-                
-                
+
+                <%
+                    // ContextProduct context = new ContextProduct();
+                    ContextURL context = new ContextURL();
+                    List<Url> urls = context.getAllUrls(request.getServletContext());
+                    for (Url link : urls) {
+                         //System.out.print(link.getShortUrl()); 
+
+                %>
+
+
+
                 <div class="panel-body">
                     <div class="list-group">
-                       
-                        <span class="list-group-item"><%=link.getShortUrl()%> </span> 
+
+                        <span class="list-group-item-text"> 
+                            
+                            <a href="<%= "http://localhost:8080/shorturl/?l="+link.getShortUrl()%>"><%= "http://localhost:8080/shorturl/?l="+link.getShortUrl()%></a> <br/>
+                            <%=link.getUrl() %>
+                        </span> 
                     </div>
                 </div>
-                    
-                    <% } %>
+
+                <% }%>
             </div>
         </div>
 

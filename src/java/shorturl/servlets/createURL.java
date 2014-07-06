@@ -35,7 +35,7 @@ public class createURL extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    urlJPA UrlJ = urlJPA.getInstancia();
+   // urlJPA UrlJ = urlJPA.getInstancia();
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -47,7 +47,7 @@ public class createURL extends HttpServlet {
         //si el usuario es valido
         if (urlParser.validateUrl(request)) {
             String link = request.getParameter("url");
-            String encoded = urlParser.EncodeUrl(link);
+            String encoded = urlParser.randomString(10);
             Url uri = new Url(1);
             uri.setUrl(link);
             uri.setShortUrl(encoded);
@@ -58,7 +58,7 @@ public class createURL extends HttpServlet {
             } else {
                 response.sendRedirect("./createURL");
             }
-            System.out.println(link);
+            //System.out.println(link);
             
         }
     }
