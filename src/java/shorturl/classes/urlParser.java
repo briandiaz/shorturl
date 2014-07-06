@@ -47,7 +47,7 @@ public class urlParser {
 
     public static String EncodeUrl(String url) {
         String encoded = Base64.encode(url.getBytes());
-        return encoded.substring(0, 10);
+        return encoded.substring(encoded.length() - 15, encoded.length() - 5);
     }
     /*
      public static String DecodeUrl(String url) {

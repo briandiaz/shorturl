@@ -4,6 +4,11 @@
     Author     : frangel
 --%>
 
+<%@page import="shorturl.classes.Parameters"%>
+<%@page import="java.text.DecimalFormat"%>
+<%@page import="java.util.List"%>
+<%@page import="shorturl.entities.Url"%>
+<%@page import="shorturl.context.ContextURL"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="template/header.jsp" %>
 
@@ -15,12 +20,27 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">This is your Short URL </h3>
                 </div>
+                
+                  <%
+                        // ContextProduct context = new ContextProduct();
+                        ContextURL context = new ContextURL();
+                        List<Url> urls = context.getAllUrls(request.getServletContext());
+                       
+                        for (Url link : urls) {
+                           //System.out.print(link.getShortUrl()); 
+                               
+                    %>
+                
+                
+                
                 <div class="panel-body">
-                    <div class="alert alert-dismissable alert-success">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        <%=request.getParameter("url")%><br/>
+                    <div class="list-group">
+                       
+                        <span class="list-group-item"><%=link.getShortUrl()%> </span> 
                     </div>
                 </div>
+                    
+                    <% } %>
             </div>
         </div>
 

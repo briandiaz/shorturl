@@ -14,10 +14,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import shorturl.classes.urlJPA;
 import shorturl.classes.urlParser;
+import shorturl.context.ContextURL;
 import shorturl.entities.Url;
 import shorturl.entities.User;
-import shorturl.classes.urlJPA;
 
 /**
  *
@@ -35,12 +36,12 @@ public class createURL extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     urlJPA UrlJ = urlJPA.getInstancia();
-
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         CreateUrl(request, response);
     }
-
+    
     protected void CreateUrl(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException, IOException {
         HttpSession session = request.getSession();
         //si el usuario es valido
@@ -50,10 +51,15 @@ public class createURL extends HttpServlet {
             Url uri = new Url(1);
             uri.setUrl(link);
             uri.setShortUrl(encoded);
-             UrlJ.persist(uri);
-            response.sendRedirect("./showUrl.jsp?url="+"http://localhost:8080/shorturl/"+encoded);
+            // UrlJ.persist(uri); la persistencia no funciona
+            ContextURL context = new ContextURL();
+            if (context.create(request.getServletContext(), uri)) {
+                response.sendRedirect("./showUrl.jsp");
+            } else {
+                response.sendRedirect("./createURL");
+            }
             System.out.println(link);
-
+            
         }
     }
 
