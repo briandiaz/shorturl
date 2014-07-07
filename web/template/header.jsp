@@ -27,7 +27,7 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="index.jsp"><span class="glyphicon glyphicon-home"></span> Inicio</a></li>
-                            <li><a href="CreateUrl.jsp"><span class="glyphicon glyphicon-new-window"></span> Create</a></li>
+                            <li><a href="newURL.jsp"><span class="glyphicon glyphicon-new-window"></span> Create</a></li>
                             <li><a href="MostrarCarroCompra.jsp"><span class="glyphicon glyphicon-shopping-cart"></span> Contact</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Mi cuenta <b class="caret"></b></a>

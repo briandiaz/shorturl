@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +25,7 @@ import shorturl.classes.urlJPA;
 import shorturl.classes.urlParser;
 import shorturl.entities.Url;
 import shorturl.entities.User;
+import shorturl.persistence.PersistenceJPA;
 
 /**
  *
@@ -37,39 +42,70 @@ public class ServletURL extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    urlJPA UrlJ = urlJPA.getInstancia();
-    
+    //urlJPA UrlJ = urlJPA.getInstancia();
+    PersistenceJPA persistence = PersistenceJPA.getSingletonInstance();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         proccessUrl(request, response);
     }
-    
+
     protected void proccessUrl(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException, IOException {
         HttpSession session = request.getSession();
-        urlCRUD CRUD = new urlCRUD();
-        //si el usuario es valido
-        if (urlParser.validateUrl(request)) {
-            if(request.getParameter(Parameters.servletAction).equals("create")){
-                if(CRUD.create(request)){
-                    response.sendRedirect(Parameters.showURLPage);
-                } else {
-                    response.sendRedirect(Parameters.createURLServlet);
-                }
+        Random randomGenerator = new Random();
+        Url url = new Url(randomGenerator.nextInt(100));
+        int userID;
+
+        String link = request.getParameter(Parameters.urlFullURLProp);
+        String encodedURL = urlParser.randomString(10);
+        url.setFullUrl(link);
+        url.setShortUrl(encodedURL);
+        //.setUpdatedAt(null);
+        url.setCreatedAt(new Date());
+        EntityManager entityManager = persistence.createEntityManager();
+        if (request.getParameter(Parameters.servletAction).equals("create")) {
+            try {
+
+                entityManager.getTransaction().begin();
+                entityManager.persist(url);
+                entityManager.getTransaction().commit();
+                response.sendRedirect("showUrl.jsp");
+
+            } catch (Exception e) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+                entityManager.getTransaction().rollback();
+            } finally {
+                entityManager.close();
+                // return isCreated;
             }
-            if(request.getParameter(Parameters.servletAction).equals("update")){
-                if(CRUD.update(request)){
-                    response.sendRedirect(Parameters.showURLPage);
-                } else {
-                    response.sendRedirect(Parameters.createURLServlet);
-                }
+        } else if (request.getParameter(Parameters.servletAction).equals("update")) {
+            entityManager.getTransaction().begin();
+            Url updatedUrl = entityManager.find(Url.class, request.getParameter(Parameters.urlIDProp));
+            updatedUrl.setId(Integer.parseInt(request.getParameter(Parameters.urlIDProp)));
+            updatedUrl.setShortUrl(request.getParameter(Parameters.urlShortURLProp));
+            updatedUrl.setFullUrl(request.getParameter(Parameters.urlFullURLProp));
+            //  updatedUrl.setUser((User) persistence.read(User.class  Integer.parseInt(Parameters.urlUserProp)));
+            updatedUrl.setUpdatedAt(new Date());
+            entityManager.getTransaction().commit();
+            //  persistence.updateUrl(updatedUrl);
+            response.sendRedirect("showUrl.jsp");
+        } else if (request.getParameter(Parameters.servletAction).equals("delete")) {
+            try {
+
+                entityManager.getTransaction().begin();
+                Url urix = entityManager.find(Url.class, Integer.parseInt(request.getParameter(Parameters.urlIDProp)));
+                entityManager.remove(urix);
+                entityManager.getTransaction().commit();
+                response.sendRedirect("showUrl.jsp");
+
+            } catch (Exception e) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+                entityManager.getTransaction().rollback();
+            } finally {
+                entityManager.close();
+                // return isCreated;
             }
-            if(request.getParameter(Parameters.servletAction).equals("delete")){
-                if(CRUD.delete(request)){
-                    response.sendRedirect(Parameters.homePage);
-                } else {
-                    response.sendRedirect(Parameters.createURLServlet);
-                }
-            }
+
         }
     }
 

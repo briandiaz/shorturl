@@ -4,6 +4,7 @@
     Author     : frangel
 --%>
 
+<%@page import="shorturl.persistence.PersistenceJPA"%>
 <%@page import="shorturl.classes.Parameters"%>
 <%@page import="java.text.DecimalFormat"%>
 <%@page import="java.util.List"%>
@@ -21,12 +22,15 @@
                 </div>
 
                 <%
+                    
                     // ContextProduct context = new ContextProduct();
-                    ContextURL context = new ContextURL();
-                    List<Url> urls = context.getAllUrls(request.getServletContext());
-                    for (Url link : urls) {
+                    // context = new ContextURL();
+                   // List<Url> urls = context.getAllUrls(request.getServletContext());
+                   // for (Url link : urls) {
                          //System.out.print(link.getShortUrl()); 
-
+                    PersistenceJPA persistence = PersistenceJPA.getSingletonInstance();
+                    List<Url> urls = persistence.getListaUrl();
+                     for(Url e : urls){
                 %>
 
 
@@ -36,8 +40,8 @@
 
                         <span class="list-group-item-text"> 
                             
-                            <a href="<%= "http://localhost:8080/shorturl/?l="+link.getShortUrl()%>"><%= "http://localhost:8080/shorturl/?l="+link.getShortUrl()%></a> <br/>
-                            <%=link.getUrl() %>
+                            <a href="<%= "http://localhost:8080/shorturl/?l="+e.getShortUrl() %>"><%= "http://localhost:8080/shorturl/?l="+e.getShortUrl() %></a> <br/>
+                            <%=e.getFullUrl() %>
                         </span> 
                     </div>
                 </div>
