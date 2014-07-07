@@ -7,6 +7,8 @@
     <class>shorturl.entities.UrlVisits</class>
     <class>shorturl.entities.User</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    <properties/>
+    <properties>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+    </properties>
   </persistence-unit>
 </persistence>

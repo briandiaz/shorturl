@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import shorturl.classes.Parameters;
 import shorturl.classes.urlCRUD;
-import shorturl.classes.urlJPA;
 import shorturl.classes.urlParser;
 import shorturl.entities.Url;
 import shorturl.entities.User;
@@ -60,10 +59,15 @@ public class ServletURL extends HttpServlet {
         String encodedURL = urlParser.randomString(10);
         url.setFullUrl(link);
         url.setShortUrl(encodedURL);
-        //.setUpdatedAt(null);
-        url.setCreatedAt(new Date());
+        User user = new User();
         EntityManager entityManager = persistence.createEntityManager();
+        if (request.getParameter(Parameters.urlIDProp) != null) {
+            userID = Integer.parseInt(request.getParameter(Parameters.urlIDProp));
+            user = (User) persistence.read(User.class, userID);
+            url.setUser(user);
+        }
         if (request.getParameter(Parameters.servletAction).equals("create")) {
+            url.setCreatedAt(new Date());
             try {
 
                 entityManager.getTransaction().begin();
@@ -109,6 +113,40 @@ public class ServletURL extends HttpServlet {
         }
     }
 
+    protected boolean create(Url url) {
+        int userID;
+        User user = new User();
+        url.setCreatedAt(new Date());
+        boolean isCreated = false;
+        EntityManager entityManager = persistence.createEntityManager();
+        try {
+            
+            entityManager.getTransaction().begin();
+            entityManager.persist(url);
+            entityManager.getTransaction().commit();
+            
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+            entityManager.getTransaction().rollback();
+        } finally {
+            entityManager.close();
+            return isCreated;
+        }
+    }
+
+    protected Url read(Object object) {
+        return (Url)persistence.read(Url.class, object);
+    }
+    
+    protected boolean update(Url url) {
+        return persistence.updateUrl(url);
+    }
+
+    protected boolean delete(Url url) {
+        Url deleteUrl = (Url) persistence.read(Url.class, url.getId());
+        return persistence.delete(deleteUrl);
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

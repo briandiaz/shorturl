@@ -2,9 +2,14 @@ package shorturl.classes;
 
 import java.io.PrintWriter;
 import java.util.List;
+import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import shorturl.entities.Role;
 import shorturl.entities.User;
+import shorturl.persistence.PersistenceJPA;
+import shorturl.servlets.ServletUser;
+
 
 public class Helper {
 
@@ -16,7 +21,6 @@ public class Helper {
     private static int _role;
 
     public static boolean validateParamsUser(HttpServletRequest request) {
-        _id = Integer.parseInt(request.getParameter(Parameters.userIDProp));
         _email = request.getParameter(Parameters.userEmailProp);
         _username = request.getParameter(Parameters.userUsuarioProp);
         _password = request.getParameter(Parameters.userPasswordProp);
@@ -27,11 +31,36 @@ public class Helper {
                 && !_password.isEmpty());
     }
 
+    
+    public static void createAdminUser() {
+        
+        ServletUser servlUser = new ServletUser();
+        Role role = (Role)PersistenceJPA.getSingletonInstance().read(Role.class, 1);
+        User usr = new User();
+        usr.setUsername("admin");
+        usr.setPassword("admin");
+        usr.setEmail("admin@admin.com");
+        usr.setPhoto("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/t1.0-1/p160x160/10308232_10202539407424858_6494413392333976801_n.jpg");
+        usr.setRole(role);
+        if(!servlUser.UserValidated(usr)){
+            servlUser.create(usr);
+        }
+    }
+    
     public static boolean validateUsuario(HttpServletRequest request) {
         _username = request.getParameter(Parameters.userUsuarioProp);
         return (!_username.isEmpty() && _username != null);
     }
+    
+    public static boolean isUserLoggedIn(HttpServletRequest request) {
+        return (currentUser(request)!=null);
+    }
 
+    public static User currentUser(HttpServletRequest request) {
+        HttpSession session = (HttpSession) request.getSession();
+        return (User)session.getAttribute(Parameters.userSessionProp);
+    }
+    
     public static boolean isUserValidToLogin(HttpServletRequest request) {
         _username = request.getParameter(Parameters.userIDProp);
         _password = (String) request.getParameter(Parameters.userPasswordProp);
@@ -39,18 +68,13 @@ public class Helper {
     }
 
     public static User createUsuarioInstance(HttpServletRequest request) {
-        _id = Integer.parseInt(request.getParameter(Parameters.userIDProp));
         _email = request.getParameter(Parameters.userEmailProp);
         _username = request.getParameter(Parameters.userUsuarioProp);
         _password = request.getParameter(Parameters.userPasswordProp);
         _photo = request.getParameter(Parameters.userPhotoProp);
         _role = Integer.parseInt(request.getParameter(Parameters.userRoleProp));
-        Role rolusr = new Role(2);// 1 admin - 2 usuario - 3 anonimo
-        Role role =(Role) urlJPA.getInstancia().findObjeto(Role.class, rolusr.getId());
-        //role.setName();
-        // falta traer el role de la base de datos
+        Role role = (Role)PersistenceJPA.getSingletonInstance().read(Role.class, _role);
         User usr = new User();
-        usr.setId(_id);
         usr.setUsername(_username);
         usr.setPassword(_password);
         usr.setEmail(_email);

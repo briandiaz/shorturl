@@ -3,19 +3,24 @@ package shorturl.classes;
 public class Parameters {
  
     public static final String homePage = "index.jsp";
+    public static final String rootPath = "/shorturl/";
+    public static final String loginPage = "login.jsp";
+    public static final String registerPage = "register.jsp";
+    public static final String dashboardPage = "dashboard.jsp";
+    
     public static final String createURLServlet = "ServletURL";
     public static final String showURLPage = "showURL.jsp";
     public static final String servletAction = "servlet_action";
     /*  User Class */
 
-    public static final String userIDProp = "usuario_id";
-    public static final String userUsuarioProp = "usuario_usuario";
-    public static final String userPasswordProp = "usuario_contrasena";
-    public static final String userEmailProp = "usuario_apellido";
-    public static final String userPhotoProp = "usuario_apellido";
-    public static final String userRoleProp = "usuario_role";
+    public static final String userIDProp = "user_id";
+    public static final String userUsuarioProp = "user_username";
+    public static final String userPasswordProp = "user_password";
+    public static final String userEmailProp = "user_email";
+    public static final String userPhotoProp = "user_photo";
+    public static final String userRoleProp = "user_role";
 
-    public static final String userSessionProp = "usuario_session";
+    public static final String userSessionProp = "user_session";
 
     public static final String urlFullURLProp = "url_full";
     public static final String urlShortURLProp = "url_short";

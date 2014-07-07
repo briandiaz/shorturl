@@ -16,8 +16,11 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import shorturl.classes.Helper;
+import shorturl.classes.Parameters;
 import shorturl.entities.Url;
 
 /**
@@ -87,7 +90,21 @@ public class ParseURL implements Filter {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        String url = httpRequest.getRequestURI().toString();
         String encode = httpRequest.getParameter("l");
+        Helper.createAdminUser();
+        if (!Helper.isUserLoggedIn(httpRequest) 
+                && !url.equals(Parameters.rootPath+Parameters.loginPage)
+                && !url.equals(Parameters.rootPath+Parameters.registerPage)) {
+            
+            httpResponse.sendRedirect(Parameters.loginPage);
+            
+        }else if(Helper.isUserLoggedIn(httpRequest) 
+                && url.equals(Parameters.rootPath+Parameters.loginPage)){
+            
+            httpResponse.sendRedirect(Parameters.dashboardPage);
+        }
         /*
         ContextURL context = new ContextURL();
         List<Url> urls = context.getAllUrls(request.getServletContext());

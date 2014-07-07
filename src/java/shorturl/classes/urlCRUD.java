@@ -13,13 +13,13 @@ import shorturl.persistence.PersistenceJPA;
 public class urlCRUD implements IORMCRUD {
 
     PersistenceJPA persistence = PersistenceJPA.getSingletonInstance();
+    
 
     @Override
     public boolean create(Object object) {
         HttpServletRequest request = (HttpServletRequest) object;
         Url url = new Url();
         int userID;
-        url.setId(10);
         User user = new User();
         if (request.getParameter(Parameters.urlIDProp) != null) {
             userID = Integer.parseInt(request.getParameter(Parameters.urlIDProp));
@@ -28,19 +28,17 @@ public class urlCRUD implements IORMCRUD {
         }
         String link = request.getParameter(Parameters.urlFullURLProp);
         String encodedURL = urlParser.randomString(10);
-        url.setFullUrl(Parameters.urlFullURLProp);
+        url.setFullUrl(request.getParameter(Parameters.urlFullURLProp));
         url.setShortUrl(encodedURL);
-        //.setUpdatedAt(null);
         url.setCreatedAt(new Date());
-        EntityManager entityManager = persistence.createEntityManager();
-
         boolean isCreated = false;
+        EntityManager entityManager = persistence.createEntityManager();
         try {
-
+            
             entityManager.getTransaction().begin();
             entityManager.persist(url);
             entityManager.getTransaction().commit();
-
+            
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             entityManager.getTransaction().rollback();

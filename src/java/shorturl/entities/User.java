@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -34,9 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByPhoto", query = "SELECT u FROM User u WHERE u.photo = :photo")})
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
