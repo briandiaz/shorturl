@@ -9,7 +9,7 @@ public class Parameters {
     public static final String dashboardPage = "dashboard.jsp";
     
     public static final String createURLServlet = "ServletURL";
-    public static final String showURLPage = "showURL.jsp";
+    public static final String showURLPage = "showUrl.jsp";
     public static final String servletAction = "servlet_action";
     /*  User Class */
 

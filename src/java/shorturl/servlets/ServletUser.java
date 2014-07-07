@@ -58,7 +58,7 @@ public class ServletUser extends HttpServlet {
         } else if (request.getParameter(Parameters.servletAction).equals("update")) {
             
         } else if (request.getParameter(Parameters.servletAction).equals("delete")) {
-
+                //delete(user);
         } else if (request.getParameter(Parameters.servletAction).equals("login")) {
             user = new User();
             user.setUsername(request.getParameter(Parameters.userUsuarioProp));
@@ -76,12 +76,7 @@ public class ServletUser extends HttpServlet {
     public boolean UserValidated(User user){
         boolean isValidated = false;
         List<User> listaUsuario = persistence.getListaUsuario();
-            System.out.println(user.getUsername());
-            System.out.println(user.getPassword());
-            System.out.println(listaUsuario.size());
         for(User _user : listaUsuario){
-            System.out.println(_user.getUsername());
-            System.out.println(_user.getPassword());
             if(_user.getUsername().equals(user.getUsername()) 
                     && _user.getPassword().equals(user.getPassword())){
                 isValidated = true;
@@ -89,6 +84,22 @@ public class ServletUser extends HttpServlet {
             }
         }
         return isValidated;
+    }
+    
+    
+    public User read(User user){
+        boolean isValidated = false;
+        User myUser = null;
+        List<User> listaUsuario = persistence.getListaUsuario();
+        for(User _user : listaUsuario){
+            if(_user.getUsername().equals(user.getUsername()) 
+                    && _user.getPassword().equals(user.getPassword())){
+                isValidated = true;
+                myUser = _user;
+                break;
+            }
+        }
+        return myUser;
     }
     
     public boolean create(User user) {
@@ -108,7 +119,7 @@ public class ServletUser extends HttpServlet {
             return isCreated;
         }
     }
-
+    
     protected boolean update(User user) {
         return persistence.updateUser(user);
     }

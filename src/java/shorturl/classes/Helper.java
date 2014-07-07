@@ -61,6 +61,13 @@ public class Helper {
         return (User)session.getAttribute(Parameters.userSessionProp);
     }
     
+    public static User getCurrentUser(HttpServletRequest request) {
+        HttpSession session = (HttpSession) request.getSession();
+        ServletUser servlUser = new ServletUser();
+        User user = (User)session.getAttribute(Parameters.userSessionProp);
+        return servlUser.read(user);
+    }
+    
     public static boolean isUserValidToLogin(HttpServletRequest request) {
         _username = request.getParameter(Parameters.userIDProp);
         _password = (String) request.getParameter(Parameters.userPasswordProp);

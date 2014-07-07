@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -21,7 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
+import shorturl.entities.Role;
 import shorturl.entities.Url;
+import shorturl.entities.UrlVisits;
+import shorturl.persistence.PersistenceJPA;
 
 /**
  *
@@ -93,39 +97,51 @@ public class ParseURL implements Filter {
         
         String url = httpRequest.getRequestURI().toString();
         String encode = httpRequest.getParameter("l");
-        Helper.createAdminUser();
-        if (!Helper.isUserLoggedIn(httpRequest) 
-                && !url.equals(Parameters.rootPath+Parameters.loginPage)
-                && !url.equals(Parameters.rootPath+Parameters.registerPage)) {
-            
-            httpResponse.sendRedirect(Parameters.loginPage);
-            
-        }else if(Helper.isUserLoggedIn(httpRequest) 
-                && url.equals(Parameters.rootPath+Parameters.loginPage)){
-            
-            httpResponse.sendRedirect(Parameters.dashboardPage);
-        }
-        /*
-        ContextURL context = new ContextURL();
-        List<Url> urls = context.getAllUrls(request.getServletContext());
+        List<Url> urls = PersistenceJPA.getSingletonInstance().getListaUrl();
         doBeforeProcessing(request, response);
-        String url = "";
-
+        String uri = "";
+        Url myUrlVisited = null;
         if (encode != null && !encode.isEmpty()) {
 
             for (Url link : urls) {
 
                 if (link.getShortUrl().equals(encode)) {
-                    System.out.print(encode + "|" + link.getShortUrl() + "|" + link.getUrl());
-                    url = link.getUrl();
-                    httpResponse.sendRedirect(url);
-                    System.out.println(url);
+                    System.out.print(encode + "|" + link.getShortUrl() + "|" + link.getFullUrl());
+                    uri = link.getFullUrl();
+                    myUrlVisited = link;
+                    break;
                 }
         
             }
-
         }
-        */
+        Helper.createAdminUser();
+        if(!uri.equals("")){
+            InetAddress address = InetAddress.getLocalHost();  
+            UrlVisits urlvisit = new UrlVisits(1);
+            urlvisit.setClientDomain(address.getLoopbackAddress().toString());
+            urlvisit.setBrowser(getBrowserDetails(httpRequest));
+            urlvisit.setOperativeSystem(getOS(httpRequest));
+            urlvisit.setIp(httpRequest.getRemoteAddr());
+            urlvisit.setUrl(myUrlVisited);
+            PersistenceJPA.getSingletonInstance().create(urlvisit);
+            httpResponse.sendRedirect(uri);
+        }
+        else{
+            if (!Helper.isUserLoggedIn(httpRequest) 
+                    && !url.equals(Parameters.rootPath+Parameters.loginPage)
+                    && !url.equals(Parameters.rootPath+Parameters.registerPage)
+                    && !url.equals(Parameters.rootPath+Parameters.homePage)
+                    && !url.equals(Parameters.rootPath+Parameters.showURLPage)) {
+
+                httpResponse.sendRedirect(Parameters.loginPage);
+
+            }else if(Helper.isUserLoggedIn(httpRequest) 
+                    && url.equals(Parameters.rootPath+Parameters.loginPage)
+                    && !url.equals(Parameters.rootPath+Parameters.homePage)){
+
+                httpResponse.sendRedirect(Parameters.dashboardPage);
+            }
+        }
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
@@ -152,6 +168,79 @@ public class ParseURL implements Filter {
         }
     }
 
+    private String getOS(HttpServletRequest request){
+    
+        String os = "";
+        String  browserDetails  =   request.getHeader("User-Agent");
+        String  userAgent       =   browserDetails;
+        String  user            =   userAgent.toLowerCase();
+         if (userAgent.toLowerCase().indexOf("windows") >= 0 )
+         {
+             os = "Windows";
+         }
+         else if(userAgent.toLowerCase().indexOf("mac") >= 0)
+         {
+             os = "Mac";
+         }
+         else if(userAgent.toLowerCase().indexOf("x11") >= 0)
+         {
+             os = "Unix";
+         }else if(userAgent.toLowerCase().indexOf("android") >= 0)
+         {
+             os = "Android";
+         }
+         else if(userAgent.toLowerCase().indexOf("iphone") >= 0)
+         {
+             os = "IPhone";
+         }else{
+             os = "UnKnown, More-Info: "+userAgent;
+         }
+         return os;
+    }
+    
+    private String getBrowserDetails(HttpServletRequest request){
+        String  browserDetails  =   request.getHeader("User-Agent");
+        String  userAgent       =   browserDetails;
+        String  user            =   userAgent.toLowerCase();
+        String browser = "";
+
+        if (user.contains("msie"))
+        {
+            String substring=userAgent.substring(userAgent.indexOf("MSIE")).split(";")[0];
+            browser=substring.split(" ")[0].replace("MSIE", "IE")+"-"+substring.split(" ")[1];
+        }
+        else if (user.contains("safari") && user.contains("version"))
+        {
+            browser=(userAgent.substring(userAgent.indexOf("Safari")).split(" ")[0]).split("/")[0]+"-"+(userAgent.substring(userAgent.indexOf("Version")).split(" ")[0]).split("/")[1];
+        }
+        else if ( user.contains("opr") || user.contains("opera"))
+        {
+            if(user.contains("opera"))
+                browser=(userAgent.substring(userAgent.indexOf("Opera")).split(" ")[0]).split("/")[0]+"-"+(userAgent.substring(userAgent.indexOf("Version")).split(" ")[0]).split("/")[1];
+            else if(user.contains("opr"))
+                browser=((userAgent.substring(userAgent.indexOf("OPR")).split(" ")[0]).replace("/", "-")).replace("OPR", "Opera");
+        }
+        else if (user.contains("chrome"))
+        {
+            browser=(userAgent.substring(userAgent.indexOf("Chrome")).split(" ")[0]).replace("/", "-");
+        }
+        else if ((user.indexOf("mozilla/7.0") > -1) || (user.indexOf("netscape6") != -1)  || (user.indexOf("mozilla/4.7") != -1) || (user.indexOf("mozilla/4.78") != -1) || (user.indexOf("mozilla/4.08") != -1) || (user.indexOf("mozilla/3") != -1) )
+        {
+            //browser=(userAgent.substring(userAgent.indexOf("MSIE")).split(" ")[0]).replace("/", "-");
+            browser = "Netscape-?";
+
+        }
+        else if (user.contains("firefox"))
+        {
+            browser=(userAgent.substring(userAgent.indexOf("Firefox")).split(" ")[0]).replace("/", "-");
+        }
+        else
+        {
+            browser = "UnKnown, More-Info: "+userAgent;
+        }
+        return browser;
+    }
+    
     /**
      * Return the filter configuration object for this filter.
      */

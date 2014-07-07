@@ -32,6 +32,10 @@
         <servlet-name>ServletUser</servlet-name>
         <servlet-class>shorturl.servlets.ServletUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DestroySession</servlet-name>
+        <servlet-class>shorturl.servlets.DestroySession</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ServletURL</servlet-name>
         <url-pattern>/ServletURL</url-pattern>
@@ -51,6 +55,10 @@
     <servlet-mapping>
         <servlet-name>ServletUser</servlet-name>
         <url-pattern>/ServletUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DestroySession</servlet-name>
+        <url-pattern>/DestroySession</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

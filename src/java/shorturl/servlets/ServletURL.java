@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
 import shorturl.classes.urlCRUD;
 import shorturl.classes.urlParser;
@@ -61,10 +62,8 @@ public class ServletURL extends HttpServlet {
         url.setShortUrl(encodedURL);
         User user = new User();
         EntityManager entityManager = persistence.createEntityManager();
-        if (request.getParameter(Parameters.urlIDProp) != null) {
-            userID = Integer.parseInt(request.getParameter(Parameters.urlIDProp));
-            user = (User) persistence.read(User.class, userID);
-            url.setUser(user);
+        if (Helper.isUserLoggedIn(request)) {
+            url.setUser(Helper.getCurrentUser(request));
         }
         if (request.getParameter(Parameters.servletAction).equals("create")) {
             url.setCreatedAt(new Date());
@@ -114,8 +113,6 @@ public class ServletURL extends HttpServlet {
     }
 
     protected boolean create(Url url) {
-        int userID;
-        User user = new User();
         url.setCreatedAt(new Date());
         boolean isCreated = false;
         EntityManager entityManager = persistence.createEntityManager();
