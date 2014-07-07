@@ -36,16 +36,12 @@ public class urlParser {
     }
 
     public static boolean validateUrl(HttpServletRequest request) throws MalformedURLException {
-        boolean flag = true;
         // creando un URL mediante el url que se manda por request
-        URL link = new URL(request.getParameter("url"));
+        String urlValue = request.getParameter(Parameters.urlFullURLProp);
+        System.out.println("link"+request.getParameter(Parameters.urlFullURLProp));
+        java.net.URL link = new java.net.URL(urlValue.toString());
         // si se tiene HOST ya se tiene compuesta una URL         
-        if (link.getHost() != null) {
-            flag = true;
-        } else {
-            flag = false;
-        }
-        return flag;
+        return (link.getHost() != null);
     }
 
     public static String EncodeUrl(String url) {

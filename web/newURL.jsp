@@ -16,13 +16,15 @@
                                 <h3 class="panel-title">Create your URL </h3>
                             </div>
                             <div class="panel-body">
-                                <form accept-charset="UTF-8" role="form" method="POST" action="./createURL">
+                                <form accept-charset="UTF-8" role="form" method="POST" action="./ServletURL">
                                     <fieldset>
                                          <div class="form-group">
                                              Enter your url,a  long URL is a website address such as:</br><span class="text-primary ">https://www.pucmmsti.edu.do/websise/estudiante/</span> 
                                         </div>
+                                        <input class="form-control" name="servlet_action" id="servlet_action" type="hidden" value="create" autofocus >
+                                        <input class="form-control" name="url_user" id="url_user" type="hidden" value="" autofocus >
                                         <div class="form-group">
-                                            <input class="form-control" placeholder="url" name="url" id="url" type="text" value="" autofocus >
+                                            <input class="form-control" placeholder="url_full" name="url_full" id="url_full" type="text" autofocus >
                                         </div>
                                         
                                         <input class="btn btn-lg btn-success btn-block" type="submit" value="Crear">

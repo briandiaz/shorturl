@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-  <persistence-unit name="shorturlPU" transaction-type="JTA">
-    <jta-data-source>shorturl_jndi</jta-data-source>
-    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+  <persistence-unit name="shorturlPU" transaction-type="RESOURCE_LOCAL">
+    <non-jta-data-source>h2orm_shorturl</non-jta-data-source>
+    <class>shorturl.entities.Role</class>
+    <class>shorturl.entities.Url</class>
+    <class>shorturl.entities.UrlVisits</class>
+    <class>shorturl.entities.User</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties/>
   </persistence-unit>
 </persistence>

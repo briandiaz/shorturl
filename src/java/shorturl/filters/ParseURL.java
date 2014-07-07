@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package shorturl.filtros;
+package shorturl.filters;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -18,7 +18,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import shorturl.context.ContextURL;
 import shorturl.entities.Url;
 
 /**
@@ -89,6 +88,7 @@ public class ParseURL implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String encode = httpRequest.getParameter("l");
+        /*
         ContextURL context = new ContextURL();
         List<Url> urls = context.getAllUrls(request.getServletContext());
         doBeforeProcessing(request, response);
@@ -104,9 +104,11 @@ public class ParseURL implements Filter {
                     httpResponse.sendRedirect(url);
                     System.out.println(url);
                 }
+        
             }
 
         }
+        */
         Throwable problem = null;
         try {
             chain.doFilter(request, response);

@@ -9,14 +9,16 @@ package shorturl.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import shorturl.classes.Parameters;
+import shorturl.classes.urlCRUD;
 import shorturl.classes.urlJPA;
 import shorturl.classes.urlParser;
-import shorturl.context.ContextURL;
 import shorturl.entities.Url;
 import shorturl.entities.User;
 
@@ -24,7 +26,7 @@ import shorturl.entities.User;
  *
  * @author frangel
  */
-public class createURL extends HttpServlet {
+public class ServletURL extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,31 +37,39 @@ public class createURL extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-   // urlJPA UrlJ = urlJPA.getInstancia();
+    urlJPA UrlJ = urlJPA.getInstancia();
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CreateUrl(request, response);
+        proccessUrl(request, response);
     }
     
-    protected void CreateUrl(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException, IOException {
+    protected void proccessUrl(HttpServletRequest request, HttpServletResponse response) throws MalformedURLException, IOException {
         HttpSession session = request.getSession();
+        urlCRUD CRUD = new urlCRUD();
         //si el usuario es valido
         if (urlParser.validateUrl(request)) {
-            String link = request.getParameter("url");
-            String encoded = urlParser.randomString(10);
-            Url uri = new Url(1);
-            uri.setUrl(link);
-            uri.setShortUrl(encoded);
-            // UrlJ.persist(uri); la persistencia no funciona
-            ContextURL context = new ContextURL();
-            if (context.create(request.getServletContext(), uri)) {
-                response.sendRedirect("./showUrl.jsp");
-            } else {
-                response.sendRedirect("./createURL");
+            if(request.getParameter(Parameters.servletAction).equals("create")){
+                if(CRUD.create(request)){
+                    response.sendRedirect(Parameters.showURLPage);
+                } else {
+                    response.sendRedirect(Parameters.createURLServlet);
+                }
             }
-            //System.out.println(link);
-            
+            if(request.getParameter(Parameters.servletAction).equals("update")){
+                if(CRUD.update(request)){
+                    response.sendRedirect(Parameters.showURLPage);
+                } else {
+                    response.sendRedirect(Parameters.createURLServlet);
+                }
+            }
+            if(request.getParameter(Parameters.servletAction).equals("delete")){
+                if(CRUD.delete(request)){
+                    response.sendRedirect(Parameters.homePage);
+                } else {
+                    response.sendRedirect(Parameters.createURLServlet);
+                }
+            }
         }
     }
 

@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import shorturl.classes.Helper;
-import shorturl.context.ContextUser;
 import shorturl.entities.User;
 
 /**
@@ -37,7 +36,7 @@ public class CreateUser extends HttpServlet {
         HttpSession session = request.getSession();
         if (Helper.validateParamsUser(request)) {
             User usuario = Helper.createUsuarioInstance(request);
-            if ((new ContextUser()).create(request.getServletContext(), usuario)) {
+            /*if ((new ContextUser()).create(request.getServletContext(), usuario)) {
                 session.setAttribute("user", usuario);
                 Cookie mycookie = new Cookie("user", usuario.getUsername());
                 mycookie.setMaxAge(120);
@@ -45,7 +44,7 @@ public class CreateUser extends HttpServlet {
                 response.sendRedirect("CreateUrl.jsp");
             } else {
                 response.sendRedirect("creacionUsuarios.jsp");
-            }
+            }*/
         } else {
             response.sendRedirect("creacionUsuarios.jsp");
         }

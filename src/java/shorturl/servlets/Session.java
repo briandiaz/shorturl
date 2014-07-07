@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import shorturl.classes.Helper;
-import shorturl.context.ContextUser;
 import shorturl.entities.User;
 //import practica.jsp.context.ContextUser;
 
@@ -38,7 +37,7 @@ public class Session extends HttpServlet {
         ServletContext application = request.getServletContext();
         if (Helper.isUserValidToLogin(request)) {
             User usuario = Helper.createUsuarioLoginInstance(request);
-            if ((new ContextUser()).isUserAvailable(application, usuario)) {
+           /*if ((new ContextUser()).isUserAvailable(application, usuario)) {
                 Cookie mycookie = new Cookie("user", usuario.getUsername());
                 mycookie.setMaxAge(120);
                 response.addCookie(mycookie);
@@ -46,7 +45,7 @@ public class Session extends HttpServlet {
                 response.sendRedirect("CreateUrl.jsp");
             } else {
                 (response.getWriter()).println("error!!!");
-            }
+            }*/
         } else {
             response.sendRedirect("index.jsp");
         }

@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "UrlVisits.findAll", query = "SELECT u FROM UrlVisits u"),
     @NamedQuery(name = "UrlVisits.findById", query = "SELECT u FROM UrlVisits u WHERE u.id = :id"),
-    @NamedQuery(name = "UrlVisits.findByVisits", query = "SELECT u FROM UrlVisits u WHERE u.visits = :visits"),
     @NamedQuery(name = "UrlVisits.findByIp", query = "SELECT u FROM UrlVisits u WHERE u.ip = :ip"),
+    @NamedQuery(name = "UrlVisits.findByBrowser", query = "SELECT u FROM UrlVisits u WHERE u.browser = :browser"),
     @NamedQuery(name = "UrlVisits.findByClientDomain", query = "SELECT u FROM UrlVisits u WHERE u.clientDomain = :clientDomain"),
     @NamedQuery(name = "UrlVisits.findByOperativeSystem", query = "SELECT u FROM UrlVisits u WHERE u.operativeSystem = :operativeSystem")})
 public class UrlVisits implements Serializable {
@@ -36,11 +36,12 @@ public class UrlVisits implements Serializable {
     @NotNull
     @Column(name = "ID")
     private Integer id;
-    @Column(name = "VISITS")
-    private Integer visits;
     @Size(max = 30)
     @Column(name = "IP")
     private String ip;
+    @Size(max = 100)
+    @Column(name = "BROWSER")
+    private String browser;
     @Size(max = 150)
     @Column(name = "CLIENT_DOMAIN")
     private String clientDomain;
@@ -66,20 +67,20 @@ public class UrlVisits implements Serializable {
         this.id = id;
     }
 
-    public Integer getVisits() {
-        return visits;
-    }
-
-    public void setVisits(Integer visits) {
-        this.visits = visits;
-    }
-
     public String getIp() {
         return ip;
     }
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
     }
 
     public String getClientDomain() {

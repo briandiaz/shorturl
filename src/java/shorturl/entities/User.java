@@ -8,10 +8,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -52,11 +52,11 @@ public class User implements Serializable {
     @Size(max = 200)
     @Column(name = "PHOTO")
     private String photo;
-    @ManyToMany(mappedBy = "userList")
-    private List<Url> urlList;
     @JoinColumn(name = "ROLE", referencedColumnName = "ID")
     @ManyToOne
     private Role role;
+    @OneToMany(mappedBy = "user")
+    private List<Url> urlList;
 
     public User() {
     }
@@ -105,6 +105,14 @@ public class User implements Serializable {
         this.photo = photo;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @XmlTransient
     public List<Url> getUrlList() {
         return urlList;
@@ -112,14 +120,6 @@ public class User implements Serializable {
 
     public void setUrlList(List<Url> urlList) {
         this.urlList = urlList;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     @Override

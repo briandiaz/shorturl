@@ -9,8 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -33,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Url.findAll", query = "SELECT u FROM Url u"),
     @NamedQuery(name = "Url.findById", query = "SELECT u FROM Url u WHERE u.id = :id"),
     @NamedQuery(name = "Url.findByShortUrl", query = "SELECT u FROM Url u WHERE u.shortUrl = :shortUrl"),
-    @NamedQuery(name = "Url.findByUrl", query = "SELECT u FROM Url u WHERE u.url = :url"),
+    @NamedQuery(name = "Url.findByFullUrl", query = "SELECT u FROM Url u WHERE u.fullUrl = :fullUrl"),
     @NamedQuery(name = "Url.findByCreatedAt", query = "SELECT u FROM Url u WHERE u.createdAt = :createdAt"),
     @NamedQuery(name = "Url.findByUpdatedAt", query = "SELECT u FROM Url u WHERE u.updatedAt = :updatedAt")})
 public class Url implements Serializable {
@@ -47,21 +46,19 @@ public class Url implements Serializable {
     @Column(name = "SHORT_URL")
     private String shortUrl;
     @Size(max = 255)
-    @Column(name = "URL")
-    private String url;
+    @Column(name = "FULL_URL")
+    private String fullUrl;
     @Column(name = "CREATED_AT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Column(name = "UPDATED_AT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @JoinTable(name = "URL_USER", joinColumns = {
-        @JoinColumn(name = "URL", referencedColumnName = "ID")}, inverseJoinColumns = {
-        @JoinColumn(name = "USER", referencedColumnName = "ID")})
-    @ManyToMany
-    private List<User> userList;
     @OneToMany(mappedBy = "url")
     private List<UrlVisits> urlVisitsList;
+    @JoinColumn(name = "USER", referencedColumnName = "ID")
+    @ManyToOne
+    private User user;
 
     public Url() {
     }
@@ -86,12 +83,12 @@ public class Url implements Serializable {
         this.shortUrl = shortUrl;
     }
 
-    public String getUrl() {
-        return url;
+    public String getFullUrl() {
+        return fullUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setFullUrl(String fullUrl) {
+        this.fullUrl = fullUrl;
     }
 
     public Date getCreatedAt() {
@@ -111,21 +108,20 @@ public class Url implements Serializable {
     }
 
     @XmlTransient
-    public List<User> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
-    }
-
-    @XmlTransient
     public List<UrlVisits> getUrlVisitsList() {
         return urlVisitsList;
     }
 
     public void setUrlVisitsList(List<UrlVisits> urlVisitsList) {
         this.urlVisitsList = urlVisitsList;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

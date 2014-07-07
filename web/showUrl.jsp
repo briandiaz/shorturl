@@ -8,7 +8,6 @@
 <%@page import="java.text.DecimalFormat"%>
 <%@page import="java.util.List"%>
 <%@page import="shorturl.entities.Url"%>
-<%@page import="shorturl.context.ContextURL"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="template/header.jsp" %>
 
