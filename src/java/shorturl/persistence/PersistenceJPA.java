@@ -198,7 +198,7 @@ public class PersistenceJPA {
 
     public List<UrlVisits> getListaUrlVisits() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        List resultList = entityManager.createQuery("select e from URL_Visits e").getResultList();
+        List resultList = entityManager.createQuery("select e from UrlVisits e").getResultList();
         entityManager.close();
         return resultList;
     }

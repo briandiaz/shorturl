@@ -7,6 +7,8 @@ public class Parameters {
     public static final String loginPage = "login.jsp";
     public static final String registerPage = "register.jsp";
     public static final String dashboardPage = "dashboard.jsp";
+    public static final String myURLPage = "myURL.jsp";
+    public static final String notUserURLSPage = "urls.jsp";
     
     public static final String createURLServlet = "ServletURL";
     public static final String showURLPage = "showUrl.jsp";
@@ -38,4 +40,24 @@ public class Parameters {
     public static final String dbUser = "sa";
     public static final String dbPassword = "";
 
+    public static final String sessionDataURL = "dataUrl";
+    
+    /*      Browsers */
+    public static final String browserInternetExplorer = "InternetExplorer";
+    public static final String browserFirefox = "Firefox";
+    public static final String browserChrome = "Chrome";
+    public static final String browserSafari = "Safari";
+    public static final String browserOpera = "Opera";
+    public static final String browserNetScape = "NetScape";
+    public static final String browserUnknown = "Unknown";
+    
+    /**     Operative System    */
+    public static final String osUnknown = "Unknown";
+    public static final String osWindows = "Windows";
+    public static final String osMac = "Mac";
+    public static final String osAndroid = "Android";
+    public static final String osiPhone = "iPhone";
+    public static final String osUnix = "Unix";
+    
+    
 }

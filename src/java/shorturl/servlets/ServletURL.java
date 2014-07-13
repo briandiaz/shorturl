@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,7 +63,8 @@ public class ServletURL extends HttpServlet {
         url.setShortUrl(encodedURL);
         User user = new User();
         EntityManager entityManager = persistence.createEntityManager();
-        if (Helper.isUserLoggedIn(request)) {
+        boolean isCurrentUser = Helper.isUserLoggedIn(request);
+        if (isCurrentUser) {
             url.setUser(Helper.getCurrentUser(request));
         }
         if (request.getParameter(Parameters.servletAction).equals("create")) {
@@ -72,7 +74,14 @@ public class ServletURL extends HttpServlet {
                 entityManager.getTransaction().begin();
                 entityManager.persist(url);
                 entityManager.getTransaction().commit();
-                response.sendRedirect("showUrl.jsp");
+                if(isCurrentUser){
+                    response.sendRedirect("showUrl.jsp?id="+url.getId());
+                }
+                else{
+                    Helper.addURLFromNotRegisteredUser(session, url);
+                    response.sendRedirect("urls.jsp");
+                    
+                }
 
             } catch (Exception e) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);

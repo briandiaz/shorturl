@@ -1,41 +1,25 @@
 
-<%@page import="shorturl.APIs.QR_API"%>
+<%@page import="shorturl.classes.Parameters"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="shorturl.entities.UrlVisits"%>
+<%@page import="shorturl.APIs.QR_API"%>
 <%@page import="shorturl.persistence.PersistenceJPA"%>
 <%@page import="java.util.List"%>
 <%@page import="shorturl.entities.Url"%>
-<%@page import="shorturl.entities.Url"%>
 <%@page import="shorturl.entities.User"%>
 <%@page import="shorturl.classes.Helper"%>
-<%@page import="shorturl.classes.Parameters"%>
 <%
     User current_user = Helper.getCurrentUser(request);
-    int urlID = Integer.parseInt(request.getParameter("id"));
+    List<User> users = PersistenceJPA.getSingletonInstance().getListaUsuario();
+    if(!current_user.getUsername().equals("admin")){
+        response.sendRedirect(Parameters.homePage);
+    }
     
-    List<Url> urls = PersistenceJPA.getSingletonInstance().getListaUrl();
-    Url url = null;
-    for(Url _url : urls){
-        if(_url.getId().equals(urlID)){
-            url = _url;
-            break;
-        }
-    }
-    List<UrlVisits> urlVisits = PersistenceJPA.getSingletonInstance().getListaUrlVisits();
-    List<UrlVisits> myUrlVisits = new ArrayList<UrlVisits>();
-    for(UrlVisits urlV : urlVisits){
-        if(urlV.getUrl().getId().equals(urlID)){
-            myUrlVisits.add(urlV);
-        }
-    }
-    int[] browserData = Helper.getBrowserChartData(myUrlVisits);
-    int[] osData = Helper.getOsChartData(myUrlVisits);
 %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Short.me | <%= url.getShortUrl() %></title>
+        <title>Short.me | Users</title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
         <!-- bootstrap 3.0.2 -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -62,14 +46,6 @@
           <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
           <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <!-- jQuery UI 1.10.3 -->
-        <script src="assets/js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
-        <!-- Bootstrap -->
-        <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>  
-        <script src="http://cdn.oesmith.co.uk/morris-0.4.1.min.js"></script>
-
-        
     </head>
     <body class="skin-blue">
         <!-- header logo: style can be found in header.less -->
@@ -86,10 +62,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </a>                
+                </a>
                 <div class="navbar-right">
                     <ul class="nav navbar-nav">
-                        <li><a href="#" class="btn btn-link btn-sm" data-toggle="modal" data-target="#newURL"><i class="glyphicon glyphicon-plus"></i> <span>New URL</span></a></li>
+                        
+                        <li><a href="#" class="btn btn-link btn-sm" data-toggle="modal" data-target="#newURL">New URL</a></li>
                         <% if(current_user != null) { %>
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -142,7 +119,7 @@
                             </a>
                         </li>
                         <% if(current_user.getUsername().equals("admin")){%>
-                        <li>
+                        <li class="active">
                             <a href="users.jsp">
                                 <i class="glyphicon glyphicon-user"></i> <span>Users</span> 
                             </a>
@@ -158,8 +135,8 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        short.me/<%= url.getShortUrl() %>
-                        <small><%= url.getFullUrl() %></small>
+                        Dashboard
+                        <small>My Urls</small>
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -172,153 +149,25 @@
 
                     <!-- Small boxes (Stat box) -->
                     <div class="row">
-                        <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->
-                            <div class="small-box bg-green">
-                                <div class="inner">
-                                    <h3>
-                                        <% if(myUrlVisits.size()>0) {%>
-                                        <%= myUrlVisits.size() %>
-                                        <%} else{ %>
-                                        0
-                                        <% }%>
-                                    </h3>
-                                    <p>
-                                        Visits
-                                    </p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-stats-bars"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">
-                                    More info <i class="fa fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div><!-- ./col -->
-                                       <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->
-                            <div class="small-box bg-orange">
-                                <div class="inner">
-                                    <h3>
-                                        <%
-                                        int cant = 0;
-                                        for(int i = 0; i < browserData.length; i++){
-                                            if(browserData[i]>0){
-                                                cant++;
-                                            }
-                                        }
-                                        %>
-                                        <%= cant %>
-                                    </h3>
-                                    <p>
-                                        Browsers
-                                    </p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-android-earth"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">
-                                    More info <i class="fa fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div><!-- ./col -->
-                                       <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->
-                            <div class="small-box bg-red">
-                                <div class="inner">
-                                    <h3>
-                                        <%
-                                        cant = 0;
-                                        for(int i = 0; i < osData.length; i++){
-                                            if(osData[i]>0){
-                                                cant++;
-                                            }
-                                        }
-                                        %>
-                                        <%= cant %>
-                                    </h3>
-                                    <p>
-                                        Operative Systems
-                                    </p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-android-system-windows"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">
-                                    More info <i class="fa fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div><!-- ./col -->
-                    </div><!-- /.row -->
-
-                    <!-- top row -->
-                    <div class="row">
-                        <div class="col-xs-12 connectedSortable">
-                            
-                        </div><!-- /.col -->
-                    </div>
-                    <!-- /.row -->
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <!-- Bar chart -->
-                            <div class="box box-primary">
-                                <div class="box-header">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                    <h3 class="box-title">Browsers</h3>
-                                </div>
-                                <div class="box-body">
-                                    <div id="browser-chart"></div>
-                                </div><!-- /.box-body-->
-                            </div><!-- /.box -->
-                        </div>
-                        <div class="col-md-6">
-                            <!-- Bar chart -->
-                            <div class="box box-primary">
-                                <div class="box-header">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                    <h3 class="box-title">Operative Systems</h3>
-                                </div>
-                                <div class="box-body">
-                                    <div id="os-chart"></div>
-                                </div><!-- /.box-body-->
-                            </div><!-- /.box -->
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h3>QR Code</h3>
-                            <img src="<%= (new QR_API("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"350x350","UTF-8")).getQR() %>" class="thumbnail"/>
-                        </div>
-                        <div class="col-md-6">
-                            <h3>ScreenShot</h3>
-                            <img src="https://api.browshot.com/api/v1/simple?url=<%= url.getFullUrl() %>&instance_id=12&width=640&height=480&key=R4uJaCOXSmCQYsm1DhimRQaNVv&format=png&shot=1&quality=90&shots=1&t=8" class="thumbnail"/>
-                        
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-12">
                             <div class="box">
                                 <div class="box-header">
-                                    <h3 class="box-title">All Visits</h3>
+                                    <h3 class="box-title">All Urls</h3>
                                 </div><!-- /.box-header -->
                                 <div class="box-body">
                                     <table class="table table-bordered">
                                         <tbody><tr>
                                             <th style="width: 10px">ID</th>
-                                            <th>Browser</th>
-                                            <th>ClientDomain</th>
-                                            <th>IP</th>
-                                            <th>OS</th>
+                                            <th>UserName</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
                                         </tr>
-                                        <% for(UrlVisits urlVis : myUrlVisits) { %>
+                                        <% for(User user : users) { %>
                                         <tr>
-                                            <td><%= urlVis.getId() %></td>
-                                            <td><%= urlVis.getBrowser() %></td>
-                                            <td><%= urlVis.getClientDomain() %></td>
-                                            <td><%= urlVis.getIp()%></td>
-                                            <td><%= urlVis.getOperativeSystem()%></td>
+                                            <td><%= user.getId() %></td>
+                                            <td><%= user.getUsername() %></td>
+                                            <td><a href="mailto:<%= user.getEmail() %>"><%= user.getEmail() %></a></td>
+                                            <td><%= user.getRole().getName() %></td>
                                         </tr>
                                         <% } %>
                                     </tbody></table>
@@ -326,6 +175,7 @@
                             </div><!-- /.box -->
                         </div>
                     </div>
+
                 </section><!-- /.content -->
             </aside><!-- /.right-side -->
         </div><!-- ./wrapper -->
@@ -352,7 +202,7 @@
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-link"></i>
                                                 </div>
-                                                <input class="form-control" placeholder="url_full" name="url_full" id="url_full" type="url" autofocus required pattern="https?://.+" >
+                                                <input class="form-control" placeholder="url_full" name="url_full" id="url_full" autofocus  type="url" autofocus required pattern="https?://.+">
                                             </div>
                                         </div>
                                         
@@ -367,41 +217,16 @@
             </div>
           </div>
         </div>
-      <script type="text/javascript">
-$(function() {
-Morris.Bar({
-  element: 'browser-chart',
-  data: [
-      <% String[] browsersName = {"InternetExplorer", "Firefox", "Chrome", "Safari", "Opera", "NetScape", "Unknown"}; %>
-      <% for(int i = 0; i < browserData.length; i++){ 
-      %>
-          { y : '<%= browsersName[i] %>', a : <%= browserData[i] %> },
-      <% } %>
-  ],
-  xkey: 'y',
-  ykeys: ['a'],
-  labels: ['Visits']
-});
-
-Morris.Donut({
-  element: 'os-chart',
-  data: [
-      <% String[] osName = {"Unknown", "Windows", "Mac", "Android", "iPhone", "Unix"}; %>
-      <% for(int i = 0; i < osData.length; i++){ 
-          if(osData[i] > 0){
-      %>
-          { label : '<%= osName[i] %>', value : <%= osData[i] %> },
-      <% } 
-      } %>
-  ]
-});
-    
-});
-            </script>
 
         <!-- jQuery 2.0.2 -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+        <!-- jQuery UI 1.10.3 -->
+        <script src="assets/js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
+        <!-- Bootstrap -->
+        <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
         <!-- Morris.js charts -->
         <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+        <script src="assets/js/plugins/morris/morris.min.js" type="text/javascript"></script>
         <!-- Sparkline -->
         <script src="assets/js/plugins/sparkline/jquery.sparkline.min.js" type="text/javascript"></script>
         <!-- jvectormap -->
@@ -424,6 +249,8 @@ Morris.Donut({
         <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
         <script src="assets/js/AdminLTE/dashboard.js" type="text/javascript"></script>     
         
-  
+        <!-- AdminLTE for demo purposes -->
+        <script src="assets/js/AdminLTE/demo.js" type="text/javascript"></script>
+
     </body>
 </html>

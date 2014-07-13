@@ -50,7 +50,7 @@ public class ServletUser extends HttpServlet {
             if (Helper.validateParamsUser(request)) {
                 if (create(user)) {
                     session.setAttribute(Parameters.userSessionProp, user);
-                    response.sendRedirect("index.jsp");
+                    response.sendRedirect("login.jsp");
                 }
             } else {
                 response.sendRedirect(Parameters.registerPage);
@@ -65,7 +65,7 @@ public class ServletUser extends HttpServlet {
             user.setPassword(request.getParameter(Parameters.userPasswordProp));
             if(UserValidated(user)){
                 session.setAttribute(Parameters.userSessionProp, user);
-                response.sendRedirect(Parameters.dashboardPage);
+                response.sendRedirect(Parameters.myURLPage);
             }else{
                 response.sendRedirect(Parameters.loginPage);
             }
@@ -110,7 +110,7 @@ public class ServletUser extends HttpServlet {
             entityManager.getTransaction().begin();
             entityManager.persist(user);
             entityManager.getTransaction().commit();
-
+            isCreated = true;
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             entityManager.getTransaction().rollback();
