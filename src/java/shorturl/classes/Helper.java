@@ -74,6 +74,9 @@ public class Helper {
         return (currentUser(request) != null);
     }
 
+    public static boolean isAdminUser(HttpServletRequest request) {
+        return (isUserLoggedIn(request) && currentUser(request).getUsername().equals("admin"));
+    }
     public static User currentUser(HttpServletRequest request) {
         HttpSession session = (HttpSession) request.getSession();
         return (User) session.getAttribute(Parameters.userSessionProp);
@@ -131,6 +134,10 @@ public class Helper {
         return myUrls;
     }
 
+    public static List<Url> getAllURL() {
+        return PersistenceJPA.getSingletonInstance().getListaUrl();
+    }
+    
     public static void addURLFromNotRegisteredUser(HttpSession session, Url url) {
         List<Url> urls;
         Date now = new Date();

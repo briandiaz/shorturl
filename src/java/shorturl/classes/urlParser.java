@@ -1,14 +1,3 @@
-/*
- URL aURL = new URL(url);
- protocol = aURL.getProtocol();
- authority = aURL.getAuthority();
- host = aURL.getHost();
- port = aURL.getPort();
- path = aURL.getPath();
- query = aURL.getQuery();
- filename = aURL.getFile();
- ref = aURL.getRef();
- */
 package shorturl.classes;
 
 import com.sun.xml.wss.impl.misc.Base64;
@@ -55,15 +44,5 @@ public class urlParser {
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
         }
         return sb.toString();
-    }
-    /*
-     public static String DecodeUrl(String url) {
-     byte[] decoded = Base64.decode(url);
-     return new String(decoded);
-     }*/
-
-    public static void main(String[] args) throws MalformedURLException {
-        String vinculo = "http://www.pucmmsti.edu.do/domingo/sabado/index.jsp";
-        System.out.println(EncodeUrl(vinculo));
     }
 }

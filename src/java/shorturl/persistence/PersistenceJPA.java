@@ -66,6 +66,7 @@ public class PersistenceJPA {
         try {
             
             entityManager.getTransaction().begin();
+            entityManager.merge(object);
             entityManager.remove(object);
             entityManager.getTransaction().commit();
             isDeleted = true;

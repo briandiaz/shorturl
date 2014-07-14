@@ -147,6 +147,11 @@
                                 <i class="glyphicon glyphicon-user"></i> <span>Users</span> 
                             </a>
                         </li>
+                        <li>
+                            <a href="postedurls.jsp">
+                                <i class="glyphicon glyphicon-flag"></i> <span>Manage URLs</span> 
+                            </a>
+                        </li>
                         <%}%>
                     </ul>
                 </section>

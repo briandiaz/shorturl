@@ -8,7 +8,7 @@
 <%@page import="shorturl.classes.Helper"%>
 <%
     User current_user = Helper.getCurrentUser(request);
-    List<Url> myUrls = Helper.getRegisteredUserURLs(current_user);
+    List<Url> allUrls = Helper.getAllURL();
     
     
 %>
@@ -16,7 +16,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Short.me | myURLs</title>
+        <title>Short.me | Manage URLs</title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
         <!-- bootstrap 3.0.2 -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -109,7 +109,7 @@
                                 <i class="glyphicon glyphicon-plus"></i> <span>New URL</span>
                             </a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="myURL.jsp">
                                 <i class="glyphicon glyphicon-link"></i> <span>URLs</span> 
                             </a>
@@ -120,7 +120,7 @@
                                 <i class="glyphicon glyphicon-user"></i> <span>Users</span> 
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="postedurls.jsp">
                                 <i class="glyphicon glyphicon-flag"></i> <span>Manage URLs</span> 
                             </a>
@@ -163,15 +163,17 @@
                                             <th>Short url</th>
                                             <th>User ID</th>
                                             <th>QR Code</th>
+                                            <th>Action</th>
                                         </tr>
-                                        <% for(Url url : myUrls) { %>
+                                        <% for(Url url : allUrls) { %>
                                         <tr>
                                             <td><a href="http://localhost:8080/shorturl/showUrl.jsp?id=<%= url.getId() %>"><%= url.getId() %></a></td>
                                             <td><%= url.getCreatedAt() %></td>
                                             <td><a href="<%= url.getFullUrl() %>"><%= url.getFullUrl() %></a></td>
                                             <td><a href="http://localhost:8080/shorturl/?l=<%= url.getShortUrl() %>"><%= url.getShortUrl() %></a></td>
-                                            <td><%= url.getUser().getUsername() %></td>
+                                            <td><% if(url.getUser()!= null){%><%= url.getUser().getUsername() %><% } %></td>
                                             <td><img src="<%= (new QR_API("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"50x50","UTF-8")).getQR() %>" width="50" height="50"/></td>
+                                            <td><a href="#" class="btn btn-sm btn-danger deleteUrl" data-url="<%= url.getId() %>">Delete</a></td>
                                         </tr>
                                         <% } %>
                                     </tbody></table>
@@ -228,33 +230,22 @@
         <script src="assets/js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
         <!-- Bootstrap -->
         <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
-        <!-- Morris.js charts -->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-        <script src="assets/js/plugins/morris/morris.min.js" type="text/javascript"></script>
-        <!-- Sparkline -->
-        <script src="assets/js/plugins/sparkline/jquery.sparkline.min.js" type="text/javascript"></script>
-        <!-- jvectormap -->
-        <script src="assets/js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js" type="text/javascript"></script>
-        <script src="assets/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js" type="text/javascript"></script>
-        <!-- fullCalendar -->
-        <script src="assets/js/plugins/fullcalendar/fullcalendar.min.js" type="text/javascript"></script>
-        <!-- jQuery Knob Chart -->
-        <script src="assets/js/plugins/jqueryKnob/jquery.knob.js" type="text/javascript"></script>
-        <!-- daterangepicker -->
-        <script src="assets/js/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
-        <!-- Bootstrap WYSIHTML5 -->
-        <script src="assets/js/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js" type="text/javascript"></script>
-        <!-- iCheck -->
-        <script src="assets/js/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
-
-        <!-- AdminLTE App -->
-        <script src="assets/js/AdminLTE/app.js" type="text/javascript"></script>
-        
-        <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-        <script src="assets/js/AdminLTE/dashboard.js" type="text/javascript"></script>     
-        
-        <!-- AdminLTE for demo purposes -->
-        <script src="assets/js/AdminLTE/demo.js" type="text/javascript"></script>
-
+        <script type="text/javascript">
+            $(function(){
+                    $(".deleteUrl").click(function(e){
+                       e.preventDefault();
+                       var id = $(this).data("url");
+                       var urlRow = $(this);
+                       $.post( "./DestroyURL", { id: id }, function() {
+                                urlRow.parent().parent().hide("slow");
+                            } )
+                            
+                            .fail(function() {
+                                alert( "error" );
+                            });
+                       
+                    });
+            });
+        </script>
     </body>
 </html>
