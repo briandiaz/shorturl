@@ -1,9 +1,15 @@
 package shorturl.classes;
 
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Persistence;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -203,26 +209,26 @@ public class Helper {
      //"InternetExplorer", "Firefox", "Chrome", "Safari", "Opera", "NetScape", "Unknown"
         int[] browserVisits = {0, 0, 0, 0, 0, 0, 0};
 
-        for (int i = 0; i < myUrlVisits.size(); i++) {
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserInternetExplorer)) {
+        for (UrlVisits myUrlVisit : myUrlVisits) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserInternetExplorer)) {
                 browserVisits[0]++;
             }
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserFirefox)) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserFirefox)) {
                 browserVisits[1]++;
             }
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserChrome)) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserChrome)) {
                 browserVisits[2]++;
             }
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserSafari)) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserSafari)) {
                 browserVisits[3]++;
             }
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserOpera)) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserOpera)) {
                 browserVisits[4]++;
             }
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserNetScape)) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserNetScape)) {
                 browserVisits[5]++;
             }
-            if (myUrlVisits.get(i).getBrowser().equals(Parameters.browserUnknown)) {
+            if (myUrlVisit.getBrowser().equals(Parameters.browserUnknown)) {
                 browserVisits[6]++;
             }
         }
@@ -234,26 +240,48 @@ public class Helper {
      //"Unknown", "Windows", "Mac", "Android", "iPhone", "Unix"
         int[] osVisits = {0, 0, 0, 0, 0, 0};
 
-        for (int i = 0; i < myUrlVisits.size(); i++) {
-            if (myUrlVisits.get(i).getOperativeSystem().equals(Parameters.osUnknown)) {
+        for (UrlVisits myUrlVisit : myUrlVisits) {
+            if (myUrlVisit.getOperativeSystem().equals(Parameters.osUnknown)) {
                 osVisits[0]++;
             }
-            if (myUrlVisits.get(i).getOperativeSystem().equals(Parameters.osWindows)) {
+            if (myUrlVisit.getOperativeSystem().equals(Parameters.osWindows)) {
                 osVisits[1]++;
             }
-            if (myUrlVisits.get(i).getOperativeSystem().equals(Parameters.osMac)) {
+            if (myUrlVisit.getOperativeSystem().equals(Parameters.osMac)) {
                 osVisits[2]++;
             }
-            if (myUrlVisits.get(i).getOperativeSystem().equals(Parameters.osAndroid)) {
+            if (myUrlVisit.getOperativeSystem().equals(Parameters.osAndroid)) {
                 osVisits[3]++;
             }
-            if (myUrlVisits.get(i).getOperativeSystem().equals(Parameters.osiPhone)) {
+            if (myUrlVisit.getOperativeSystem().equals(Parameters.osiPhone)) {
                 osVisits[4]++;
             }
-            if (myUrlVisits.get(i).getOperativeSystem().equals(Parameters.osUnix)) {
+            if (myUrlVisit.getOperativeSystem().equals(Parameters.osUnix)) {
                 osVisits[5]++;
             }
         }
         return osVisits;
+    }
+    
+    public static List<String> getVisitsDateTimeDetail(List<UrlVisits> urlVisits){
+        
+        DateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy hh");
+        List<String> visitsDateTime = new ArrayList<String>();
+        for(UrlVisits visit : urlVisits)
+        {
+            visitsDateTime.add(simpleDateFormat.format(visit.getCreatedAt()));
+        }
+        java.util.Collections.sort(visitsDateTime);
+        return visitsDateTime;
+    }
+    
+    public static HashMap getVisitsDateTimeChartData(List<String> dates){
+        HashMap hm = new HashMap();
+        Set<String> unique = new HashSet<String>(dates);
+        for (String key : unique) {
+            System.out.println(key + ": " + Collections.frequency(dates, key));
+            hm.put(key,Collections.frequency(dates, key));
+        }
+        return hm;
     }
 }

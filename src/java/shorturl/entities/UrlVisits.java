@@ -2,6 +2,7 @@
 package shorturl.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,6 +35,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UrlVisits.findByClientDomain", query = "SELECT u FROM UrlVisits u WHERE u.clientDomain = :clientDomain"),
     @NamedQuery(name = "UrlVisits.findByOperativeSystem", query = "SELECT u FROM UrlVisits u WHERE u.operativeSystem = :operativeSystem")})
 public class UrlVisits implements Serializable {
+    @Column(name = "CREATED_AT")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
     private static final long serialVersionUID = 1L;
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -132,6 +138,14 @@ public class UrlVisits implements Serializable {
     @Override
     public String toString() {
         return "shorturl.entities.UrlVisits[ id=" + id + " ]";
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
     
 }

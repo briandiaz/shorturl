@@ -1,4 +1,4 @@
-<%@page import="shorturl.APIs.QR_API"%>
+<%@page import="shorturl.APIs.QRApi"%>
 <%@page import="shorturl.classes.Helper"%>
 <%@page import="java.util.List"%>
 <%@page import="shorturl.persistence.PersistenceJPA"%>
@@ -99,7 +99,7 @@
                                     </div>
                                     <div class="timeline-body text-center">
                                         <p><%= url.getFullUrl() %></p>
-                                        <p><img src="<%= (new QR_API("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"250x250","UTF-8")).getQR() %>" /></p>
+                                        <p><img src="<%= (new QRApi("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"250x250","UTF-8")).getQR() %>" /></p>
                                     </div>
                                 </div>
                             </li>

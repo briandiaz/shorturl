@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -123,6 +124,7 @@ public class ParseURL implements Filter {
             urlvisit.setOperativeSystem(Helper.getOS(httpRequest));
             urlvisit.setIp(httpRequest.getRemoteAddr());
             urlvisit.setUrl(myUrlVisited);
+            urlvisit.setCreatedAt(new Date());
             PersistenceJPA.getSingletonInstance().create(urlvisit);
             httpResponse.sendRedirect(uri);
         } else {

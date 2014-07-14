@@ -2,25 +2,25 @@ package shorturl.APIs;
 
 import shorturl.classes.Parameters;
 
-public class QR_API {
+public class QRApi {
 
     public String size;
     public String url;
     public String chartsetSource;
 
-    public QR_API() {
+    public QRApi() {
     }
 
-    public QR_API(String _url) {
+    public QRApi(String _url) {
         this.url = _url;
     }
 
-    public QR_API(String _url, String _size) {
+    public QRApi(String _url, String _size) {
         this.url = _url;
         this.size = _size;
     }
 
-    public QR_API(String _url, String _size, String _chartsetSource) {
+    public QRApi(String _url, String _size, String _chartsetSource) {
         this.url = _url;
         this.size = _size;
         this.chartsetSource = _chartsetSource;
@@ -72,7 +72,7 @@ public class QR_API {
         return Parameters.QR_API_CREATE + "?"
                 + "data=" + url
                 + "&size=" + (this.size.equals("") ? "150x150" : this.size)
-                + "&charset-source=" + (this.chartsetSource.equals("") ? 
+                + "&charset-source=" + (this.chartsetSource != null ? 
                                         "UTF-8" : this.chartsetSource);
     }
 

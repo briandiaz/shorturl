@@ -1,6 +1,6 @@
 
 <%@page import="java.util.ArrayList"%>
-<%@page import="shorturl.APIs.QR_API"%>
+<%@page import="shorturl.APIs.QRApi"%>
 <%@page import="shorturl.persistence.PersistenceJPA"%>
 <%@page import="java.util.List"%>
 <%@page import="shorturl.entities.Url"%>
@@ -171,7 +171,7 @@
                                             <td><a href="<%= url.getFullUrl() %>"><%= url.getFullUrl() %></a></td>
                                             <td><a href="http://localhost:8080/shorturl/?l=<%= url.getShortUrl() %>"><%= url.getShortUrl() %></a></td>
                                             <td><%= url.getUser().getUsername() %></td>
-                                            <td><img src="<%= (new QR_API("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"50x50","UTF-8")).getQR() %>" width="50" height="50"/></td>
+                                            <td><img src="<%= (new QRApi("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"50x50","UTF-8")).getQR() %>" width="50" height="50"/></td>
                                         </tr>
                                         <% } %>
                                     </tbody></table>

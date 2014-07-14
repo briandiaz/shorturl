@@ -1,5 +1,9 @@
 
-<%@page import="shorturl.APIs.QR_API"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Set"%>
+<%@page import="shorturl.APIs.ScreenShotApi"%>
+<%@page import="shorturl.APIs.QRApi"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="shorturl.entities.UrlVisits"%>
 <%@page import="shorturl.persistence.PersistenceJPA"%>
@@ -30,6 +34,9 @@
     }
     int[] browserData = Helper.getBrowserChartData(myUrlVisits);
     int[] osData = Helper.getOsChartData(myUrlVisits);
+    List<String> dateVisits = Helper.getVisitsDateTimeDetail(myUrlVisits);
+    Set set = Helper.getVisitsDateTimeChartData(dateVisits).entrySet();
+    Iterator iterator = set.iterator();
 %>
 <!DOCTYPE html>
 <html>
@@ -290,15 +297,30 @@
                             </div><!-- /.box -->
                         </div>
                     </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Bar chart -->
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <i class="fa fa-bar-chart-o"></i>
+                                    <h3 class="box-title">Date</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div id="date-chart"></div>
+                                </div><!-- /.box-body-->
+                            </div><!-- /.box -->
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-md-6">
                             <h3>QR Code</h3>
-                            <img src="<%= (new QR_API("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"350x350","UTF-8")).getQR() %>" class="thumbnail"/>
+                            <img src="<%= (new QRApi("http://localhost:8080/shorturl/?l="+url.getShortUrl(),"350x350","UTF-8")).getQR() %>" class="thumbnail"/>
                         </div>
                         <div class="col-md-6">
                             <h3>ScreenShot</h3>
-                            <img src="https://api.browshot.com/api/v1/simple?url=<%= url.getFullUrl() %>&instance_id=12&width=640&height=480&key=R4uJaCOXSmCQYsm1DhimRQaNVv&format=png&shot=1&quality=90&shots=1&t=8" class="thumbnail"/>
+                            <img src="<%= (new ScreenShotApi(url.getFullUrl())).getScreenShot() %>" class="thumbnail"/>
                         
                         </div>
                     </div>
@@ -316,6 +338,7 @@
                                             <th>ClientDomain</th>
                                             <th>IP</th>
                                             <th>OS</th>
+                                            <th>Date</th>
                                         </tr>
                                         <% for(UrlVisits urlVis : myUrlVisits) { %>
                                         <tr>
@@ -324,6 +347,7 @@
                                             <td><%= urlVis.getClientDomain() %></td>
                                             <td><%= urlVis.getIp()%></td>
                                             <td><%= urlVis.getOperativeSystem()%></td>
+                                            <td><%= urlVis.getCreatedAt()%></td>
                                         </tr>
                                         <% } %>
                                     </tbody></table>
@@ -400,7 +424,18 @@ Morris.Donut({
       } %>
   ]
 });
-    
+Morris.Line({
+  element: 'date-chart',
+  data: [
+      <% while(iterator.hasNext()) {
+         Map.Entry dataVisit = (Map.Entry)iterator.next(); %>
+        { y: '<%= dataVisit.getKey() %>', a: <%= dataVisit.getValue() %>},
+    <% }%>
+  ],
+  xkey: 'y',
+  ykeys: ['a'],
+  labels: ['Date']
+});    
 });
             </script>
 
