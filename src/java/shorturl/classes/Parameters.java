@@ -12,6 +12,7 @@ public class Parameters {
     public static final String createURLServlet = "ServletURL";
     public static final String showURLPage = "showUrl.jsp";
     public static final String servletAction = "servlet_action";
+    public static final String root = "http://localhost:8080/shorturl/";
     
     /*      User Class */
     public static final String userIDProp = "user_id";

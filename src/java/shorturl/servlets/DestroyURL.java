@@ -3,6 +3,7 @@ package shorturl.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import shorturl.classes.Helper;
 import shorturl.entities.Url;
+import shorturl.entities.UrlVisits;
 import shorturl.entities.User;
 import shorturl.persistence.PersistenceJPA;
 
@@ -42,7 +44,8 @@ public class DestroyURL extends HttpServlet {
         PrintWriter out = response.getWriter();
         if(Helper.isAdminUser(request)){
             int urlID = Integer.parseInt(request.getParameter("id"));
-            if(destroy(urlID)){
+            List<UrlVisits> urlVisits = PersistenceJPA.getSingletonInstance().getListaUrlVisits(urlID);
+            if(destroy(urlID,urlVisits)){
                 out.println("<div class=\"alert alert-success alert-dismissible\" role=\"alert\">\n" +
 "  <button type=\"button\" class=\"close\" data-dismiss=\"alert\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\n" +
 "  <strong>URL Deleted!</strong> This url was deleted successfully!.\n" +
@@ -63,13 +66,18 @@ public class DestroyURL extends HttpServlet {
         }
     }
     
-    protected boolean destroy(int urlID) {
+    protected boolean destroy(int urlID, List<UrlVisits> urlVisits) {
         boolean isDeleted = false;
         EntityManager entityManager = persistence.createEntityManager();
             
         try {
 
             entityManager.getTransaction().begin();
+            for(UrlVisits visit : urlVisits){
+                UrlVisits urlVisit = entityManager.getReference(UrlVisits.class, visit.getId());
+                entityManager.merge(urlVisit);
+                entityManager.remove(urlVisit);
+            }
             Url url = entityManager.getReference(Url.class, urlID);
             entityManager.merge(url);
             entityManager.remove(url);

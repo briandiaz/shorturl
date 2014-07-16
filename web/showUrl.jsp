@@ -170,7 +170,7 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        short.me/<%= url.getShortUrl() %>
+                        <a href="<%= Parameters.root %>?l=<%= url.getShortUrl() %>">short.me/<%= url.getShortUrl() %></a>
                         <small><%= url.getFullUrl() %></small>
                     </h1>
                     <ol class="breadcrumb">

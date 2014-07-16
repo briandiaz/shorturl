@@ -1,7 +1,6 @@
 
 <%@page import="shorturl.classes.Parameters"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="shorturl.APIs.QR_API"%>
 <%@page import="shorturl.persistence.PersistenceJPA"%>
 <%@page import="java.util.List"%>
 <%@page import="shorturl.entities.Url"%>

@@ -173,7 +173,7 @@
                                             <td><a href="<%= url.getFullUrl() %>"><%= url.getFullUrl() %></a></td>
                                             <td><a href="http://localhost:8080/shorturl/?l=<%= url.getShortUrl() %>"><%= url.getShortUrl() %></a></td>
                                             <td><% if(url.getUser()!= null){%><%= url.getUser().getUsername() %><% } %></td>
-                                            <td><img src="<%= (new ScreenShotApi(url.getFullUrl()).getScreenShot() %>" width="50" height="50"/></td>
+                                            <td><img src="<%= (new ScreenShotApi(url.getFullUrl())).getScreenShot() %>" width="50" height="50"/></td>
                                             <td><a href="#" class="btn btn-sm btn-danger deleteUrl" data-url="<%= url.getId() %>">Delete</a></td>
                                         </tr>
                                         <% } %>

@@ -204,6 +204,13 @@ public class PersistenceJPA {
         return resultList;
     }
 
+    public List<UrlVisits> getListaUrlVisits(int id) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List resultList = entityManager.createQuery("select e from UrlVisits e WHERE e.url.id = "+id).getResultList();
+        entityManager.close();
+        return resultList;
+    }
+    
     public List<Role> getListaRole() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List resultList = entityManager.createQuery("select e from Role e").getResultList();
