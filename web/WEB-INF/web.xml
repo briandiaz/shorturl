@@ -25,10 +25,6 @@
         <servlet-class>shorturl.servlets.DestroyUser</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Session</servlet-name>
-        <servlet-class>shorturl.servlets.Session</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ServletUser</servlet-name>
         <servlet-class>shorturl.servlets.ServletUser</servlet-class>
     </servlet>
@@ -51,10 +47,6 @@
     <servlet-mapping>
         <servlet-name>DestroyUser</servlet-name>
         <url-pattern>/DestroyUser</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Session</servlet-name>
-        <url-pattern>/Session</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ServletUser</servlet-name>

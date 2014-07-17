@@ -141,8 +141,13 @@ public class ParseURL implements Filter {
             } else if (isCurrentUser
                     && url.equals(Parameters.rootPath + Parameters.loginPage)
                     && !url.equals(Parameters.rootPath + Parameters.homePage)) {
-
+                
                 httpResponse.sendRedirect("myURL.jsp");
+            }else if( !Helper.isAdminUser(httpRequest) && 
+                    ((url.equals(Parameters.rootPath + Parameters.manageUrlsPage))
+                    || url.equals(Parameters.rootPath + Parameters.manageUsersPage))
+                    ){
+                httpResponse.sendRedirect(Parameters.homePage);
             }
         }
         Throwable problem = null;

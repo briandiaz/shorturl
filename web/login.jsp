@@ -2,7 +2,7 @@
 <html class="bg-black">
     <head>
         <meta charset="UTF-8">
-        <title>Short.me - SignUp</title>
+        <title>Short.me - Login</title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
         <!-- bootstrap 3.0.2 -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -21,7 +21,7 @@
     <body class="bg-black">
 
         <div class="form-box" id="login-box">
-            <div class="header">Register in Short.me</div>
+            <div class="header">Login to Short.me</div>
             <form action="./ServletUser" method="post">
                 <div class="body bg-gray">
                     <input type="hidden" name="servlet_action" id="servlet_action" value="login"/>

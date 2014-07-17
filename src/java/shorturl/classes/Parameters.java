@@ -7,6 +7,8 @@ public class Parameters {
     public static final String loginPage = "login.jsp";
     public static final String registerPage = "register.jsp";
     public static final String dashboardPage = "dashboard.jsp";
+    public static final String manageUrlsPage = "postedurls.jsp";
+    public static final String manageUsersPage = "users.jsp";
     public static final String myURLPage = "myURL.jsp";
     public static final String notUserURLSPage = "urls.jsp";
     public static final String createURLServlet = "ServletURL";

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
+import shorturl.entities.Role;
 import shorturl.entities.Url;
 import shorturl.entities.User;
 import shorturl.persistence.PersistenceJPA;
@@ -56,7 +57,16 @@ public class ServletUser extends HttpServlet {
                 response.sendRedirect(Parameters.registerPage);
             }
         } else if (request.getParameter(Parameters.servletAction).equals("update")) {
-            
+            int userID = Integer.parseInt(request.getParameter(Parameters.userIDProp));
+            int roleID = Integer.parseInt(request.getParameter(Parameters.userRoleProp));
+            user = (User) persistence.read(User.class, userID);
+            Role role = (Role)persistence.read(Role.class,roleID);
+            user.setRole(role);
+            if(update(user)){
+                response.getWriter().println("Updated role of " + user.getUsername() + " to " + role.getName());
+            }else{
+                response.getWriter().println("Error");
+            }
         } else if (request.getParameter(Parameters.servletAction).equals("delete")) {
                 //delete(user);
         } else if (request.getParameter(Parameters.servletAction).equals("login")) {
