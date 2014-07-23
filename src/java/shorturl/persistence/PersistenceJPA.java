@@ -11,12 +11,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import shorturl.entities.Role;
 import shorturl.entities.Url;
 import shorturl.entities.UrlVisits;
 import shorturl.entities.User;
 import shorturl.interfaces.IORMCRUD;
-import javax.persistence.Persistence;
 
 public class PersistenceJPA {
 
@@ -41,16 +42,16 @@ public class PersistenceJPA {
     public EntityManager createEntityManager() {
         return entityManagerFactory.createEntityManager();
     }
-    
+
     public boolean create(Object object) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         boolean isCreated = false;
         try {
-            
+
             entityManager.getTransaction().begin();
             entityManager.persist(object);
             entityManager.getTransaction().commit();
-            
+
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             entityManager.getTransaction().rollback();
@@ -64,13 +65,13 @@ public class PersistenceJPA {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         boolean isDeleted = false;
         try {
-            
+
             entityManager.getTransaction().begin();
             entityManager.merge(object);
             entityManager.remove(object);
             entityManager.getTransaction().commit();
             isDeleted = true;
-        
+
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             entityManager.getTransaction().rollback();
@@ -117,7 +118,7 @@ public class PersistenceJPA {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         boolean isUpdated = false;
         try {
-            
+
             entityManager.getTransaction().begin();
             Role find = entityManager.find(Role.class, rol.getId());
             find.setName(rol.getName());
@@ -125,7 +126,7 @@ public class PersistenceJPA {
             find.setValue(rol.getValue());
             entityManager.getTransaction().commit();
             isUpdated = true;
-            
+
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
             entityManager.getTransaction().rollback();
@@ -163,7 +164,7 @@ public class PersistenceJPA {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         boolean isUpdated = false;
         try {
-            
+
             entityManager.getTransaction().begin();
             UrlVisits find = entityManager.find(UrlVisits.class, vis.getId());
             find.setBrowser(vis.getBrowser());
@@ -183,13 +184,41 @@ public class PersistenceJPA {
         }
     }
 
+    public User getUserByUsername(String username) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("select e from User e where e.username = :username");
+        query.setParameter("username", username);
+        List<User> users = query.getResultList();
+        entityManager.close();
+        return (users.size() > 0) ? users.get(0) : null;
+    }
+
+    public User getUserBySession(String username, String password) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("select e from User e where e.username = :username and e.password = :password");
+        query.setParameter("username", username);
+        query.setParameter("password", password);
+        List<User> users = query.getResultList();
+        entityManager.close();
+        return (users.size() > 0) ? users.get(0) : null;
+    }
+
     public List<Url> getListaUrl() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List resultList = entityManager.createQuery("select e from Url e").getResultList();
         entityManager.close();
         return resultList;
     }
-
+    
+    public Url getUrlByID(int id) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("select e from Url e where e.id = :id");
+        query.setParameter("id", id);
+        List<Url> urls = query.getResultList();
+        entityManager.close();
+        return (urls.size() > 0) ? urls.get(0) : null;
+    }
+    
     public List<User> getListaUsuario() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List resultList = entityManager.createQuery("select e from User e").getResultList();
@@ -203,14 +232,23 @@ public class PersistenceJPA {
         entityManager.close();
         return resultList;
     }
+    
+    public List<UrlVisits> getListaUrlVisitsByUrl(Url url) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("select e from UrlVisits e where e.url.id = :id");
+        query.setParameter("id", url.getId());
+        List<UrlVisits> urlVisits = query.getResultList();
+        entityManager.close();
+        return urlVisits;
+    }
 
     public List<UrlVisits> getListaUrlVisits(int id) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        List resultList = entityManager.createQuery("select e from UrlVisits e WHERE e.url.id = "+id).getResultList();
+        List resultList = entityManager.createQuery("select e from UrlVisits e WHERE e.url.id = " + id).getResultList();
         entityManager.close();
         return resultList;
     }
-    
+
     public List<Role> getListaRole() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List resultList = entityManager.createQuery("select e from Role e").getResultList();

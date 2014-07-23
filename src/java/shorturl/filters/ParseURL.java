@@ -21,6 +21,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import shorturl.APIs.IPApi;
 import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
 import shorturl.entities.Role;
@@ -118,6 +119,7 @@ public class ParseURL implements Filter {
         Helper.createAdminUser();
         if (!uri.equals("")) {
             InetAddress address = InetAddress.getLocalHost();
+            IPApi ipApi = new IPApi(null);
             UrlVisits urlvisit = new UrlVisits(1);
             urlvisit.setClientDomain(address.getLoopbackAddress().toString());
             urlvisit.setBrowser(Helper.getBrowserDetails(httpRequest));
@@ -125,6 +127,8 @@ public class ParseURL implements Filter {
             urlvisit.setIp(httpRequest.getRemoteAddr());
             urlvisit.setUrl(myUrlVisited);
             urlvisit.setCreatedAt(new Date());
+            urlvisit.setCountry(ipApi.getCountry());
+            urlvisit.setCountryCode(ipApi.getCountryCode());
             PersistenceJPA.getSingletonInstance().create(urlvisit);
             httpResponse.sendRedirect(uri);
         } else {

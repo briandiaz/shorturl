@@ -71,9 +71,8 @@ public class ServletUser extends HttpServlet {
                 //delete(user);
         } else if (request.getParameter(Parameters.servletAction).equals("login")) {
             user = new User();
-            user.setUsername(request.getParameter(Parameters.userUsuarioProp));
-            user.setPassword(request.getParameter(Parameters.userPasswordProp));
-            if(UserValidated(user)){
+            user = UserValidated(request.getParameter(Parameters.userUsuarioProp),request.getParameter(Parameters.userPasswordProp));
+            if(user != null){
                 session.setAttribute(Parameters.userSessionProp, user);
                 response.sendRedirect(Parameters.myURLPage);
             }else{
@@ -83,17 +82,8 @@ public class ServletUser extends HttpServlet {
         }
     }
 
-    public boolean UserValidated(User user){
-        boolean isValidated = false;
-        List<User> listaUsuario = persistence.getListaUsuario();
-        for(User _user : listaUsuario){
-            if(_user.getUsername().equals(user.getUsername()) 
-                    && _user.getPassword().equals(user.getPassword())){
-                isValidated = true;
-                break;
-            }
-        }
-        return isValidated;
+    public User UserValidated(String username, String password){
+        return persistence.getUserBySession(username, password);
     }
     
     

@@ -13,7 +13,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -32,11 +31,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Role.findByValue", query = "SELECT r FROM Role r WHERE r.value = :value")})
 public class Role implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    @Size(max = 50)
+    @Size(max = 2147483647)
     @Column(name = "NAME")
     private String name;
     @Column(name = "VALUE")

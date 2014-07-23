@@ -64,17 +64,6 @@ public class Parameters {
     public static final String osUnix = "Unix";
     
     /*     ScreenShot API     */
-    /*
-https://api.browshot.com/api/v1/simple?
-    url=<%= url.getFullUrl() %>&
-    instance_id=12&
-    width=640&
-    height=480&
-    key=R4uJaCOXSmCQYsm1DhimRQaNVv&format=png&
-    shot=1&
-    quality=90&
-    shots=1&t=8  
-    */
     public static final String ScreenShotApiURL = "https://api.browshot.com/api/v1/simple";
     public static final String ScreenShotApiKey = "R4uJaCOXSmCQYsm1DhimRQaNVv";
     public static final String ScreenShotApiFormat = "png";
@@ -85,5 +74,7 @@ https://api.browshot.com/api/v1/simple?
     public static final int ScreenShotApiQuality = 90;
     public static final int ScreenShotApiT = 8;
     
+    /*      IP JSON     */
+    public static final String IPjsonURL = "http://ip-api.com/json/";
     
 }

@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,26 +32,26 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Url.findAll", query = "SELECT u FROM Url u"),
     @NamedQuery(name = "Url.findById", query = "SELECT u FROM Url u WHERE u.id = :id"),
-    @NamedQuery(name = "Url.findByShortUrl", query = "SELECT u FROM Url u WHERE u.shortUrl = :shortUrl"),
-    @NamedQuery(name = "Url.findByFullUrl", query = "SELECT u FROM Url u WHERE u.fullUrl = :fullUrl"),
     @NamedQuery(name = "Url.findByCreatedAt", query = "SELECT u FROM Url u WHERE u.createdAt = :createdAt"),
+    @NamedQuery(name = "Url.findByFullUrl", query = "SELECT u FROM Url u WHERE u.fullUrl = :fullUrl"),
+    @NamedQuery(name = "Url.findByShortUrl", query = "SELECT u FROM Url u WHERE u.shortUrl = :shortUrl"),
     @NamedQuery(name = "Url.findByUpdatedAt", query = "SELECT u FROM Url u WHERE u.updatedAt = :updatedAt")})
 public class Url implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
-    @Size(max = 50)
-    @Column(name = "SHORT_URL")
-    private String shortUrl;
-    @Size(max = 255)
-    @Column(name = "FULL_URL")
-    private String fullUrl;
     @Column(name = "CREATED_AT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Size(max = 2147483647)
+    @Column(name = "FULL_URL")
+    private String fullUrl;
+    @Size(max = 2147483647)
+    @Column(name = "SHORT_URL")
+    private String shortUrl;
     @Column(name = "UPDATED_AT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
@@ -77,12 +76,12 @@ public class Url implements Serializable {
         this.id = id;
     }
 
-    public String getShortUrl() {
-        return shortUrl;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setShortUrl(String shortUrl) {
-        this.shortUrl = shortUrl;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getFullUrl() {
@@ -93,12 +92,12 @@ public class Url implements Serializable {
         this.fullUrl = fullUrl;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public String getShortUrl() {
+        return shortUrl;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setShortUrl(String shortUrl) {
+        this.shortUrl = shortUrl;
     }
 
     public Date getUpdatedAt() {

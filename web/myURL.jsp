@@ -116,7 +116,7 @@
                                 <i class="glyphicon glyphicon-link"></i> <span>URLs</span> 
                             </a>
                         </li>
-                        <% if (current_user.getRole().getValue().equals(1)) {%>
+                        <% if (Helper.isAdminUser(current_user)) {%>
                         <li>
                             <a href="users.jsp">
                                 <i class="glyphicon glyphicon-user"></i> <span>Users</span> 

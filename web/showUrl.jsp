@@ -17,26 +17,26 @@
     User current_user = Helper.getCurrentUser(request);
     int urlID = Integer.parseInt(request.getParameter("id"));
 
-    List<Url> urls = PersistenceJPA.getSingletonInstance().getListaUrl();
-    Url url = null;
-    for (Url _url : urls) {
-        if (_url.getId().equals(urlID)) {
-            url = _url;
-            break;
-        }
-    }
-    List<UrlVisits> urlVisits = PersistenceJPA.getSingletonInstance().getListaUrlVisits();
-    List<UrlVisits> myUrlVisits = new ArrayList<UrlVisits>();
-    for (UrlVisits urlV : urlVisits) {
-        if (urlV.getUrl().getId().equals(urlID)) {
-            myUrlVisits.add(urlV);
-        }
-    }
+    Url url = PersistenceJPA.getSingletonInstance().getUrlByID(urlID);
+            
+    List<UrlVisits> myUrlVisits = PersistenceJPA.getSingletonInstance().getListaUrlVisitsByUrl(url);
+    
     int[] browserData = Helper.getBrowserChartData(myUrlVisits);
     int[] osData = Helper.getOsChartData(myUrlVisits);
     List<String> dateVisits = Helper.getVisitsDateTimeDetail(myUrlVisits);
-    Set set = Helper.getVisitsDateTimeChartData(dateVisits).entrySet();
-    Iterator iterator = set.iterator();
+    List<String> countryCodesList = Helper.getCountryCodeDetail(myUrlVisits);
+    List<String> countryList = Helper.getCountryDetail(myUrlVisits);
+    
+    
+    
+    Set setDate = Helper.convertToChartData(dateVisits).entrySet();
+    Iterator iteratorDates = setDate.iterator();
+    
+    Set setCountryCodes = Helper.convertToChartData(countryCodesList).entrySet();
+    Iterator iteratorCountryCodes = setCountryCodes.iterator();
+    
+    Set setCountries = Helper.convertToChartData(countryList).entrySet();
+    Iterator iteratorCountries = setCountries.iterator();
 %>
 <!DOCTYPE html>
 <html>
@@ -148,7 +148,7 @@
                                 <i class="glyphicon glyphicon-link"></i> <span>URLs</span> 
                             </a>
                         </li>
-                        <% if (current_user.getRole().getValue().equals(1)) {%>
+                        <% if (Helper.isAdminUser(current_user)) {%>
                         <li>
                             <a href="users.jsp">
                                 <i class="glyphicon glyphicon-user"></i> <span>Users</span> 
@@ -284,22 +284,52 @@
                                 </div><!-- /.box-body-->
                             </div><!-- /.box -->
                         </div>
-                        <div class="col-md-6">
-                            <!-- Bar chart -->
+                        
+                        <div class="col-lg-6 connectedSortable">
+                            <!-- Map box -->
                             <div class="box box-primary">
                                 <div class="box-header">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                    <h3 class="box-title">Operative Systems</h3>
+                                    <!-- tools box -->
+                                    <div class="pull-right box-tools">                                        
+                                        <button class="btn btn-primary btn-sm daterange pull-right" data-toggle="tooltip" title="Date range"><i class="fa fa-calendar"></i></button>
+                                        <button class="btn btn-primary btn-sm pull-right" data-widget='collapse' data-toggle="tooltip" title="Collapse" style="margin-right: 5px;"><i class="fa fa-minus"></i></button>
+                                    </div><!-- /. tools -->
+
+                                    <i class="fa fa-map-marker"></i>
+                                    <h3 class="box-title">
+                                        Visitors
+                                    </h3>
                                 </div>
-                                <div class="box-body">
-                                    <div id="os-chart"></div>
+                                <div class="box-body no-padding">
+                                    <div id="world-map" style="height: 300px;"></div>
+                                    <div class="table-responsive">
+                                        <!-- .table - Uses sparkline charts-->
+                                        <table class="table table-striped">
+                                            <tr>
+                                                <th>Country</th>
+                                                <th>Visitors</th>
+                                            </tr>
+                                            <% while (iteratorCountries.hasNext()) {
+                                                Map.Entry dataVisit = (Map.Entry) iteratorCountries.next();%>
+                                            <tr>
+                                                <td><%= dataVisit.getKey()%></td>
+                                                <td><%= dataVisit.getValue()%></td>
+                                            </tr>
+                                            <% }%>
+                                        </table><!-- /.table -->
+                                    </div>
                                 </div><!-- /.box-body-->
-                            </div><!-- /.box -->
+                                <div class="box-footer">
+                                    <button class="btn btn-info"><i class="fa fa-download"></i> Generate PDF</button>
+                                    <button class="btn btn-warning"><i class="fa fa-bug"></i> Report Bug</button>
+                                </div>
+                            </div>
+                            <!-- /.box -->
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <!-- Bar chart -->
                             <div class="box box-primary">
                                 <div class="box-header">
@@ -308,6 +338,19 @@
                                 </div>
                                 <div class="box-body">
                                     <div id="date-chart"></div>
+                                </div><!-- /.box-body-->
+                            </div><!-- /.box -->
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <!-- Bar chart -->
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <i class="fa fa-bar-chart-o"></i>
+                                    <h3 class="box-title">Platforms</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div id="os-chart"></div>
                                 </div><!-- /.box-body-->
                             </div><!-- /.box -->
                         </div>
@@ -338,7 +381,7 @@
                                                 <th>Browser</th>
                                                 <th>ClientDomain</th>
                                                 <th>IP</th>
-                                                <th>OS</th>
+                                                <th>Platforms (OS)</th>
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
@@ -401,16 +444,58 @@
                             Morris.Line({
                             element: 'date-chart',
                                     data: [
-            <% while (iterator.hasNext()) {
-                Map.Entry dataVisit = (Map.Entry) iterator.next();%>
+            <% while (iteratorDates.hasNext()) {
+                Map.Entry dataVisit = (Map.Entry) iteratorDates.next();%>
                                     { y: '<%= dataVisit.getKey()%>', a: <%= dataVisit.getValue()%>},
             <% }%>
                                     ],
                                     xkey: 'y',
                                     ykeys: ['a'],
-                                    labels: ['Date']
+                                    labels: ['Visits']
                                     });
-                            });            
+                            
+
+
+    //jvectormap data
+    var visitorsData = {
+        <% while (iteratorCountryCodes.hasNext()) {
+            Map.Entry dataVisit = (Map.Entry) iteratorCountryCodes.next();%>
+            "<%= dataVisit.getKey()%>": <%= dataVisit.getValue()%>,
+        <% }%>
+    };
+    //World map by jvectormap
+    $('#world-map').vectorMap({
+        map: 'world_mill_en',
+        backgroundColor: "#fff",
+        regionStyle: {
+            initial: {
+                fill: '#e4e4e4',
+                "fill-opacity": 1,
+                stroke: 'none',
+                "stroke-width": 0,
+                "stroke-opacity": 1
+            }
+        },
+        series: {
+            regions: [{
+                    values: visitorsData,
+                    scale: ["#3c8dbc", "#2D79A6"], //['#3E5E6B', '#A6BAC2'],
+                    normalizeFunction: 'polynomial'
+                }]
+        },
+        onRegionLabelShow: function(e, el, code) {
+            if (typeof visitorsData[code] != "undefined")
+                el.html(el.html() + ': ' + visitorsData[code] + ' new visitors');
+        }
+    });
+});     
+                            
+                            
+
+
+
+
+
             </script>
         <script src="assets/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
         <script src="assets/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>

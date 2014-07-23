@@ -66,7 +66,7 @@ public class Helper {
         usr.setEmail("admin@admin.com");
         usr.setPhoto("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/t1.0-1/p160x160/10308232_10202539407424858_6494413392333976801_n.jpg");
         usr.setRole(role);
-        if (!servlUser.UserValidated(usr)) {
+        if (PersistenceJPA.getSingletonInstance().getUserBySession(usr.getUsername(), usr.getPassword()) == null) {
             servlUser.create(usr);
         }
     }
@@ -80,8 +80,12 @@ public class Helper {
         return (currentUser(request) != null);
     }
 
+    public static boolean isAdminUser(User user) {
+        return (user.getRole().getValue().equals(1));
+    }
+    
     public static boolean isAdminUser(HttpServletRequest request) {
-        return (isUserLoggedIn(request) && currentUser(request).getUsername().equals("admin"));
+        return (isUserLoggedIn(request) && currentUser(request).getRole().getValue().equals(1));
     }
     public static User currentUser(HttpServletRequest request) {
         HttpSession session = (HttpSession) request.getSession();
@@ -275,12 +279,40 @@ public class Helper {
         return visitsDateTime;
     }
     
+    public static List<String> getCountryCodeDetail(List<UrlVisits> urlVisits){
+        List<String> countries = new ArrayList<String>();
+        for(UrlVisits visit : urlVisits)
+        {
+            countries.add(visit.getCountryCode());
+        }
+        return countries;
+    }
+    
+    public static List<String> getCountryDetail(List<UrlVisits> urlVisits){
+        List<String> countries = new ArrayList<String>();
+        for(UrlVisits visit : urlVisits)
+        {
+            countries.add(visit.getCountry());
+        }
+        return countries;
+    }
+    
     public static HashMap getVisitsDateTimeChartData(List<String> dates){
         HashMap hm = new HashMap();
         Set<String> unique = new HashSet<String>(dates);
         for (String key : unique) {
             System.out.println(key + ": " + Collections.frequency(dates, key));
             hm.put(key,Collections.frequency(dates, key));
+        }
+        return hm;
+    }
+    
+    public static HashMap convertToChartData(List<String> data){
+        HashMap hm = new HashMap();
+        Set<String> unique = new HashSet<String>(data);
+        for (String key : unique) {
+            System.out.println(key + ": " + Collections.frequency(data, key));
+            hm.put(key,Collections.frequency(data, key));
         }
         return hm;
     }

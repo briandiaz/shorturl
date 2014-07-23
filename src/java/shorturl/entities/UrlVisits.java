@@ -16,7 +16,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -30,32 +29,41 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "UrlVisits.findAll", query = "SELECT u FROM UrlVisits u"),
     @NamedQuery(name = "UrlVisits.findById", query = "SELECT u FROM UrlVisits u WHERE u.id = :id"),
-    @NamedQuery(name = "UrlVisits.findByIp", query = "SELECT u FROM UrlVisits u WHERE u.ip = :ip"),
     @NamedQuery(name = "UrlVisits.findByBrowser", query = "SELECT u FROM UrlVisits u WHERE u.browser = :browser"),
     @NamedQuery(name = "UrlVisits.findByClientDomain", query = "SELECT u FROM UrlVisits u WHERE u.clientDomain = :clientDomain"),
-    @NamedQuery(name = "UrlVisits.findByOperativeSystem", query = "SELECT u FROM UrlVisits u WHERE u.operativeSystem = :operativeSystem")})
+    @NamedQuery(name = "UrlVisits.findByCreatedAt", query = "SELECT u FROM UrlVisits u WHERE u.createdAt = :createdAt"),
+    @NamedQuery(name = "UrlVisits.findByIp", query = "SELECT u FROM UrlVisits u WHERE u.ip = :ip"),
+    @NamedQuery(name = "UrlVisits.findByOperativeSystem", query = "SELECT u FROM UrlVisits u WHERE u.operativeSystem = :operativeSystem"),
+    @NamedQuery(name = "UrlVisits.findByCountry", query = "SELECT u FROM UrlVisits u WHERE u.country = :country"),
+    @NamedQuery(name = "UrlVisits.findByCountryCode", query = "SELECT u FROM UrlVisits u WHERE u.countryCode = :countryCode")})
 public class UrlVisits implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "BROWSER")
+    private String browser;
+    @Size(max = 2147483647)
+    @Column(name = "CLIENT_DOMAIN")
+    private String clientDomain;
     @Column(name = "CREATED_AT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-    private static final long serialVersionUID = 1L;
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "ID")
-    private Integer id;
-    @Size(max = 30)
+    @Size(max = 2147483647)
     @Column(name = "IP")
     private String ip;
-    @Size(max = 100)
-    @Column(name = "BROWSER")
-    private String browser;
-    @Size(max = 150)
-    @Column(name = "CLIENT_DOMAIN")
-    private String clientDomain;
-    @Size(max = 150)
+    @Size(max = 2147483647)
     @Column(name = "OPERATIVE_SYSTEM")
     private String operativeSystem;
+    @Size(max = 150)
+    @Column(name = "COUNTRY")
+    private String country;
+    @Size(max = 3)
+    @Column(name = "COUNTRY_CODE")
+    private String countryCode;
     @JoinColumn(name = "URL", referencedColumnName = "ID")
     @ManyToOne
     private Url url;
@@ -75,14 +83,6 @@ public class UrlVisits implements Serializable {
         this.id = id;
     }
 
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
     public String getBrowser() {
         return browser;
     }
@@ -99,12 +99,44 @@ public class UrlVisits implements Serializable {
         this.clientDomain = clientDomain;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
     public String getOperativeSystem() {
         return operativeSystem;
     }
 
     public void setOperativeSystem(String operativeSystem) {
         this.operativeSystem = operativeSystem;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public Url getUrl() {
@@ -138,14 +170,6 @@ public class UrlVisits implements Serializable {
     @Override
     public String toString() {
         return "shorturl.entities.UrlVisits[ id=" + id + " ]";
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
     }
     
 }
