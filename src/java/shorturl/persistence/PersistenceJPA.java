@@ -219,6 +219,15 @@ public class PersistenceJPA {
         return (urls.size() > 0) ? urls.get(0) : null;
     }
     
+    public Url getUrlByShortURL(String shortUrl) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("select e from Url e where e.shortUrl = :shortUrl");
+        query.setParameter("shortUrl", shortUrl);
+        List<Url> urls = query.getResultList();
+        entityManager.close();
+        return (urls.size() > 0) ? urls.get(0) : null;
+    }
+    
     public List<User> getListaUsuario() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List resultList = entityManager.createQuery("select e from User e").getResultList();

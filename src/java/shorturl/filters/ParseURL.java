@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.Filter;
@@ -58,24 +59,6 @@ public class ParseURL implements Filter {
         if (debug) {
             log("ParseURL:DoAfterProcessing");
         }
-
-	// Write code here to process the request and/or response after
-        // the rest of the filter chain is invoked.
-        // For example, a logging filter might log the attributes on the
-        // request object after the request has been processed. 
-	/*
-         for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
-         String name = (String)en.nextElement();
-         Object value = request.getAttribute(name);
-         log("attribute: " + name + "=" + value.toString());
-
-         }
-         */
-        // For example, a filter might append something to the response.
-	/*
-         PrintWriter respOut = new PrintWriter(response.getWriter());
-         respOut.println("<P><B>This has been appended by an intrusive filter.</B>");
-         */
     }
 
     /**
@@ -104,71 +87,25 @@ public class ParseURL implements Filter {
         String uri = "";
         Url myUrlVisited = null;
         if (encode != null && !encode.isEmpty()) {
-
-            for (Url link : urls) {
-
-                if (link.getShortUrl().equals(encode)) {
-                    System.out.print(encode + "|" + link.getShortUrl() + "|" + link.getFullUrl());
-                    uri = link.getFullUrl();
-                    myUrlVisited = link;
-                    break;
-                }
-
-            }
+            myUrlVisited = PersistenceJPA.getSingletonInstance().getUrlByShortURL(encode);
+            uri = myUrlVisited.getFullUrl();
         }
         Helper.createAdminUser();
         if (!uri.equals("")) {
-            InetAddress address = InetAddress.getLocalHost();
-            IPApi ipApi = new IPApi(null);
-            UrlVisits urlvisit = new UrlVisits(1);
-            urlvisit.setClientDomain(address.getLoopbackAddress().toString());
-            urlvisit.setBrowser(Helper.getBrowserDetails(httpRequest));
-            urlvisit.setOperativeSystem(Helper.getOS(httpRequest));
-            urlvisit.setIp(httpRequest.getRemoteAddr());
-            urlvisit.setUrl(myUrlVisited);
-            urlvisit.setCreatedAt(new Date());
-            urlvisit.setCountry(ipApi.getCountry());
-            urlvisit.setCountryCode(ipApi.getCountryCode());
-            PersistenceJPA.getSingletonInstance().create(urlvisit);
-            httpResponse.sendRedirect(uri);
+            createVisit(httpRequest,httpResponse,myUrlVisited,uri);
         } else {
-            boolean isCurrentUser = Helper.isUserLoggedIn(httpRequest);
-            if (!isCurrentUser
-                    && !url.equals(Parameters.rootPath + Parameters.loginPage)
-                    && !url.equals(Parameters.rootPath + Parameters.registerPage)
-                    && !url.equals(Parameters.rootPath + Parameters.homePage)
-                    && !url.equals(Parameters.rootPath + Parameters.notUserURLSPage)
-                    && !url.equals(Parameters.rootPath + Parameters.showURLPage)) {
-
-                httpResponse.sendRedirect(Parameters.loginPage);
-
-            } else if (isCurrentUser
-                    && url.equals(Parameters.rootPath + Parameters.loginPage)
-                    && !url.equals(Parameters.rootPath + Parameters.homePage)) {
-                
-                httpResponse.sendRedirect("myURL.jsp");
-            }else if( !Helper.isAdminUser(httpRequest) && 
-                    ((url.equals(Parameters.rootPath + Parameters.manageUrlsPage))
-                    || url.equals(Parameters.rootPath + Parameters.manageUsersPage))
-                    ){
-                httpResponse.sendRedirect(Parameters.homePage);
-            }
+            proccessRedirections(httpRequest,httpResponse,url);
         }
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
-            // If an exception is thrown somewhere down the filter chain,
-            // we still want to execute our after processing, and then
-            // rethrow the problem after that.
             problem = t;
             t.printStackTrace();
         }
 
         doAfterProcessing(request, response);
 
-        // If there was a problem, we want to rethrow it if it is
-        // a known type, otherwise log it.
         if (problem != null) {
             if (problem instanceof ServletException) {
                 throw (ServletException) problem;
@@ -275,6 +212,51 @@ public class ParseURL implements Filter {
 
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);
+    }
+
+
+    private void createVisit(HttpServletRequest httpRequest, 
+            HttpServletResponse httpResponse,
+            Url myUrlVisited, String uri) throws UnknownHostException, IOException {
+        InetAddress address = InetAddress.getLocalHost();
+        IPApi ipApi = new IPApi(null);
+        UrlVisits urlvisit = new UrlVisits(1);
+        urlvisit.setClientDomain(address.getLoopbackAddress().toString());
+        urlvisit.setBrowser(Helper.getBrowserDetails(httpRequest));
+        urlvisit.setOperativeSystem(Helper.getOS(httpRequest));
+        urlvisit.setIp(httpRequest.getRemoteAddr());
+        urlvisit.setUrl(myUrlVisited);
+        urlvisit.setCreatedAt(new Date());
+        urlvisit.setCountry(ipApi.getCountry());
+        urlvisit.setCountryCode(ipApi.getCountryCode());
+        PersistenceJPA.getSingletonInstance().create(urlvisit);
+        httpResponse.sendRedirect(uri);
+    }
+
+    private void proccessRedirections(HttpServletRequest httpRequest, 
+            HttpServletResponse httpResponse, String url) throws IOException {
+       
+            boolean isCurrentUser = Helper.isUserLoggedIn(httpRequest);
+        if (!isCurrentUser
+                && !url.equals(Parameters.rootPath + Parameters.loginPage)
+                && !url.equals(Parameters.rootPath + Parameters.registerPage)
+                && !url.equals(Parameters.rootPath + Parameters.homePage)
+                && !url.equals(Parameters.rootPath + Parameters.notUserURLSPage)
+                && !url.equals(Parameters.rootPath + Parameters.showURLPage)) {
+
+            httpResponse.sendRedirect(Parameters.loginPage);
+
+        } else if (isCurrentUser
+                && url.equals(Parameters.rootPath + Parameters.loginPage)
+                && !url.equals(Parameters.rootPath + Parameters.homePage)) {
+
+            httpResponse.sendRedirect("myURL.jsp");
+        }else if( !Helper.isAdminUser(httpRequest) && 
+                ((url.equals(Parameters.rootPath + Parameters.manageUrlsPage))
+                || url.equals(Parameters.rootPath + Parameters.manageUsersPage))
+                ){
+            httpResponse.sendRedirect(Parameters.homePage);
+        } 
     }
 
 }
