@@ -63,8 +63,6 @@ public class IPApi {
 		e.printStackTrace();
 	} catch (IOException e) {
 		e.printStackTrace();
-	} catch (ParseException e) {
-		e.printStackTrace();
 	} finally{
             return countryInfo;
         }
