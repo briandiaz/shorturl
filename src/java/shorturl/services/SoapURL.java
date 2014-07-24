@@ -16,8 +16,8 @@ import shorturl.entities.UrlVisits;
 import shorturl.entities.User;
 import shorturl.persistence.PersistenceJPA;
 
-@WebService(serviceName = "createUrlWS")
-public class createUrlWS {
+@WebService(serviceName = "SoapURL")
+public class SoapURL {
 
 
     /*
@@ -30,20 +30,24 @@ public class createUrlWS {
      -Enviar datos de las visitas al URL
     
      */
-    //Esta funcion recibe el url y envia de vuelta una lista con todas las visitas de las url en un String 
+    //Esta funcion hay que hacerle SPLIT(",") para obtener los valores aparte 
+    // del lado de cliente ya que no se puede recibir un ARRAY
     @WebMethod(operationName = "getURLvisits")
-    public String[] getURLvisits(@WebParam(name = "url") String link) {
+    public String getURLvisits(@WebParam(name = "url") String link) {
 
-        String[] visitas = null;
+        String visitas = "";
         int conta = 0;
         Url url = PersistenceJPA.getSingletonInstance().getUrlByShortURL(link);
         List<UrlVisits> uri = PersistenceJPA.getSingletonInstance().getListaUrlVisitsByUrl(url);
         for (UrlVisits actual : uri) {
             //   0    1         2            3       4         5      6      7              8         9 
             // "id,browser,clientdomain,country,countrycode,createdAt,Ip,OpetativeSystem,FullUrl, ShortUrl"
-            //arreglo de 9 elementos
-            visitas[conta] = actual.getId() + "," + actual.getBrowser() + "," + actual.getClientDomain() + "," + actual.getCountry() + "," + actual.getCountryCode()
-                    + actual.getCreatedAt() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl();
+            // en el cliente hacer split arreglo de 9 elementos
+       visitas += actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
+                    + actual.getCountry() + "," + actual.getCountryCode()
+                    + actual.getCreatedAt() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl() + "\n";
+
+        
         }
         return visitas;
     }

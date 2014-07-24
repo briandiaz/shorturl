@@ -7,9 +7,11 @@ package shorturl.services;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.jws.WebParam;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +32,7 @@ import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
 import shorturl.classes.urlParser;
 import shorturl.entities.Url;
+import shorturl.entities.UrlVisits;
 import shorturl.entities.User;
 import shorturl.persistence.PersistenceJPA;
 
@@ -46,6 +49,7 @@ public class restURL {
     @Context
     private HttpServletRequest req;
     private HttpServletResponse resp;
+    String visitas = "";
 
     @GET
     @Produces("application/json")
@@ -54,10 +58,32 @@ public class restURL {
         return "Esto es una prueba del URI";
     }
 
+    //Esta funcion hay que hacerle SPLIT(",") para obtener los valores aparte 
+    // del lado de cliente ya que no se puede recibir un ARRAY
+    @Path("visits")
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    @Produces("application/json")
+    public String getURLvisits(@FormParam("short") String link) {
+
+        int conta = 0;
+        Url url = PersistenceJPA.getSingletonInstance().getUrlByShortURL(link);
+        List<UrlVisits> uri = PersistenceJPA.getSingletonInstance().getListaUrlVisitsByUrl(url);
+        for (UrlVisits actual : uri) {
+
+            visitas += actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
+                    + actual.getCountry() + "," + actual.getCountryCode()
+                    + actual.getCreatedAt() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl() + "\n";
+
+        }
+        System.out.print(conta);
+        return visitas;
+    }
+
     @Path("login")
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    @Produces("text/plain")
+    @Produces("application/json")
     public boolean login(@FormParam("user_username") String username, @FormParam("user_password") String password) {
         boolean islogin = false;
         HttpSession session = req.getSession();
