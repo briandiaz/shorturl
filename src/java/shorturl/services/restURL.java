@@ -6,6 +6,7 @@
 package shorturl.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -31,6 +32,7 @@ import javax.ws.rs.core.UriInfo;
 import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
 import shorturl.classes.urlParser;
+import shorturl.entities.Role;
 import shorturl.entities.Url;
 import shorturl.entities.UrlVisits;
 import shorturl.entities.User;
@@ -49,13 +51,41 @@ public class restURL {
     @Context
     private HttpServletRequest req;
     private HttpServletResponse resp;
-    String visitas = "";
+    private String lista;
 
     @GET
     @Produces("application/json")
     public String getJson() {
         //TODO return proper representation object
         return "Esto es una prueba del URI";
+    }
+
+    @Path("createuser")
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    @Produces("application/json")
+    public boolean crearUsuario(@FormParam(Parameters.userUsuarioProp) String username, @FormParam(Parameters.userPasswordProp) String password, @FormParam(Parameters.userEmailProp) String email) {
+        boolean isCreated = false;
+        User user = new User();
+        Role role = (Role) PersistenceJPA.getSingletonInstance().read(Role.class, 2);
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setRole(role);
+        EntityManager entityManager = PersistenceJPA.getSingletonInstance().createEntityManager();
+        try {
+
+            entityManager.getTransaction().begin();
+            entityManager.persist(user);
+            entityManager.getTransaction().commit();
+            isCreated = true;
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+            entityManager.getTransaction().rollback();
+        } finally {
+            entityManager.close();
+            return isCreated;
+        }
     }
 
     //Esta funcion hay que hacerle SPLIT(",") para obtener los valores aparte 
@@ -65,36 +95,36 @@ public class restURL {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
     public String getURLvisits(@FormParam("short") String link) {
-
+        //<String> lista = new ArrayList<String>();
         int conta = 0;
         Url url = PersistenceJPA.getSingletonInstance().getUrlByShortURL(link);
         List<UrlVisits> uri = PersistenceJPA.getSingletonInstance().getListaUrlVisitsByUrl(url);
         for (UrlVisits actual : uri) {
 
-            visitas += actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
+            lista += actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
                     + actual.getCountry() + "," + actual.getCountryCode()
                     + actual.getCreatedAt() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl() + "\n";
 
         }
         System.out.print(conta);
-        return visitas;
+        return lista;
     }
 
     @Path("login")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public boolean login(@FormParam("user_username") String username, @FormParam("user_password") String password) {
-        boolean islogin = false;
+    public String login(@FormParam("user_username") String username, @FormParam("user_password") String password) {
+        String islogin = "false";
         HttpSession session = req.getSession();
         User user = new User();
         user = PersistenceJPA.getSingletonInstance().getUserBySession(username, password);
         if (user != null) {
             session.setAttribute(Parameters.userSessionProp, user);
-            islogin = true;
+            islogin = "true";
 
         } else {
-            islogin = false;
+            islogin = "false";
         }
         return islogin;
     }
