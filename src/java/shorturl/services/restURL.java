@@ -51,7 +51,7 @@ public class restURL {
     @Context
     private HttpServletRequest req;
     private HttpServletResponse resp;
-    private String lista="";
+    // private String lista="";
 
     @GET
     @Produces("application/json")
@@ -91,23 +91,25 @@ public class restURL {
     //Esta funcion hay que hacerle SPLIT(",") para obtener los valores aparte 
     // del lado de cliente ya que no se puede recibir un ARRAY
     @Path("visits")
-    @POST
-    @Consumes("application/x-www-form-urlencoded")
+    @GET
+    //@Consumes("application/json")
     @Produces("application/json")
-    public String getURLvisits(@FormParam("short") String link) {
-        //<String> lista = new ArrayList<String>();
-        int conta = 0;
+    public List<UrlVisits> getURLvisits(@QueryParam("short") @DefaultValue("") String link) {
+        //List<String> lista = new ArrayList<String>();
+         // int conta = 0;
         Url url = PersistenceJPA.getSingletonInstance().getUrlByShortURL(link);
         List<UrlVisits> uri = PersistenceJPA.getSingletonInstance().getListaUrlVisitsByUrl(url);
-        for (UrlVisits actual : uri) {
+        /*
+         for (UrlVisits actual : uri) {
 
-            lista += actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
-                    + actual.getCountry() + "," + actual.getCountryCode()
-                    + actual.getCreatedAt() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl() + "\n";
+         lista.add(actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
+         + actual.getCountry() + "," + actual.getCountryCode()
+         + actual.getCreatedAt().toGMTString() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl());
 
-        }
-        System.out.print(conta);
-        return lista;
+         }*/
+        // conta++;
+        //.out.print(lista.get(0));
+        return uri;
     }
 
     @Path("login")
@@ -130,11 +132,11 @@ public class restURL {
     }
 
     @Path("url")
-    @POST
-    @Consumes("application/x-www-form-urlencoded")
+    @GET
+    //@Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
     //, @PathParam("username") String username
-    public String createURL(@FormParam("url") String link) {
+    public Url createURL(@QueryParam("url") @DefaultValue("") String link) {
         Random randomGenerator = new Random();
         HttpSession session = req.getSession();
         Url url = new Url(randomGenerator.nextInt(100));
@@ -165,7 +167,7 @@ public class restURL {
         System.out.print(url);
 
         //retornar el codigo del URL 
-        return encodedURL;
+        return url;
     }
 
 }
