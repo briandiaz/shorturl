@@ -210,6 +210,15 @@ public class PersistenceJPA {
         return resultList;
     }
     
+    public List<Url> getListaUrl(String username) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        Query query = entityManager.createQuery("select e from Url e where e.user.username = :username");
+        query.setParameter("username", username);
+        List<Url> urls = query.getResultList();
+        entityManager.close();
+        return urls;
+    }
+    
     public Url getUrlByID(int id) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         Query query = entityManager.createQuery("select e from Url e where e.id = :id");

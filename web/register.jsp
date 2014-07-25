@@ -26,7 +26,7 @@
                 <div class="body bg-gray">
                     <input type="hidden" name="servlet_action" id="servlet_action" value="create"/>
                     <input type="hidden" name="user_role" id="user_role" value="2"/>
-                    <input type="hidden" name="user_photo" id="user_photo" value="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/t1.0-1/10308232_10202539407424858_6494413392333976801_n.jpg"/>
+                    <input type="hidden" name="user_photo" id="user_photo" value=""/>
                     <div class="form-group">
                         <input type="email" name="user_email" id="user_email" class="form-control" placeholder="Email" required/>
                     </div>
@@ -52,6 +52,18 @@
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
         <!-- Bootstrap -->
         <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
-
+            <script>
+         
+      $(function(){
+        $.ajax({
+         type: 'GET', 
+         url: 'http://api.randomuser.me/?gender=male&results=1',
+         dataType: 'json',
+         success: function(data){
+             $("#user_photo").val(data["results"][0].user.picture);
+         }
+       });    
+     });
+            </script>
     </body>
 </html>

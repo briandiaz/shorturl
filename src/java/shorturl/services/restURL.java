@@ -8,6 +8,7 @@ package shorturl.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -28,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import shorturl.classes.Helper;
 import shorturl.classes.Parameters;
@@ -38,10 +40,6 @@ import shorturl.entities.UrlVisits;
 import shorturl.entities.User;
 import shorturl.persistence.PersistenceJPA;
 
-/**
- *
- * @author frangel
- */
 @Path("restURL")
 public class restURL {
 
@@ -51,7 +49,6 @@ public class restURL {
     @Context
     private HttpServletRequest req;
     private HttpServletResponse resp;
-    // private String lista="";
 
     @GET
     @Produces("application/json")
@@ -60,113 +57,88 @@ public class restURL {
         return "Esto es una prueba del URI";
     }
 
-    @Path("createuser")
+    @Path("user")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public boolean crearUsuario(@FormParam(Parameters.userUsuarioProp) String username, @FormParam(Parameters.userPasswordProp) String password, @FormParam(Parameters.userEmailProp) String email) {
-        boolean isCreated = false;
+    public User crearUsuario(@Context final HttpServletResponse response,
+      @Context final HttpServletRequest request) throws Exception{
         User user = new User();
         Role role = (Role) PersistenceJPA.getSingletonInstance().read(Role.class, 2);
+        String username = request.getParameter("user_username");
+        String email = request.getParameter("user_email");
+        String password = request.getParameter("user_password");
+        String photo = request.getParameter("user_photo");
         user.setUsername(username);
         user.setPassword(password);
         user.setEmail(email);
         user.setRole(role);
-        EntityManager entityManager = PersistenceJPA.getSingletonInstance().createEntityManager();
-        try {
-
-            entityManager.getTransaction().begin();
-            entityManager.persist(user);
-            entityManager.getTransaction().commit();
-            isCreated = true;
-        } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
-            entityManager.getTransaction().rollback();
-        } finally {
-            entityManager.close();
-            return isCreated;
-        }
+        user.setPhoto(photo);
+        PersistenceJPA.getSingletonInstance().create(user);
+        return user;
     }
 
-    //Esta funcion hay que hacerle SPLIT(",") para obtener los valores aparte 
-    // del lado de cliente ya que no se puede recibir un ARRAY
     @Path("visits")
     @GET
-    //@Consumes("application/json")
     @Produces("application/json")
-    public List<UrlVisits> getURLvisits(@QueryParam("short") @DefaultValue("") String link) {
-        //List<String> lista = new ArrayList<String>();
-         // int conta = 0;
+    public List<UrlVisits> getURLvisits(@QueryParam("short") String link) {
         Url url = PersistenceJPA.getSingletonInstance().getUrlByShortURL(link);
         List<UrlVisits> uri = PersistenceJPA.getSingletonInstance().getListaUrlVisitsByUrl(url);
-        /*
-         for (UrlVisits actual : uri) {
-
-         lista.add(actual.getId().toString() + "," + actual.getBrowser() + "," + actual.getClientDomain() + ","
-         + actual.getCountry() + "," + actual.getCountryCode()
-         + actual.getCreatedAt().toGMTString() + "," + actual.getIp() + "," + actual.getOperativeSystem() + "," + url.getFullUrl() + "," + url.getShortUrl());
-
-         }*/
-        // conta++;
-        //.out.print(lista.get(0));
         return uri;
+    }
+    
+    
+    @Path("urls")
+    @GET
+    @Produces("application/json")
+    public List<Url> getUrls(@QueryParam("username") String username) {
+        User user = PersistenceJPA.getSingletonInstance().getUserByUsername(username);
+        List<Url> urls = null;
+        if(user != null){
+            urls = PersistenceJPA.getSingletonInstance().getListaUrl(user.getUsername());
+        }
+        return urls;
     }
 
     @Path("login")
     @POST
+    @Produces({ MediaType.APPLICATION_JSON})
     @Consumes("application/x-www-form-urlencoded")
-    @Produces("application/json")
-    public String login(@FormParam("user_username") String username, @FormParam("user_password") String password) {
-        String islogin = "false";
+    public User login(@Context final HttpServletResponse response,
+      @Context final HttpServletRequest request) throws Exception {
         HttpSession session = req.getSession();
+        String user_username = request.getParameter("user_username");
+        String user_password = request.getParameter("user_password");
         User user = new User();
-        user = PersistenceJPA.getSingletonInstance().getUserBySession(username, password);
+        user = PersistenceJPA.getSingletonInstance().getUserBySession(user_username, user_password);
+        
         if (user != null) {
             session.setAttribute(Parameters.userSessionProp, user);
-            islogin = "true";
-
-        } else {
-            islogin = "false";
         }
-        return islogin;
+        return user;
     }
 
     @Path("url")
     @GET
-    //@Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    //, @PathParam("username") String username
-    public Url createURL(@QueryParam("url") @DefaultValue("") String link) {
+    public Url createURL(@QueryParam("url") String link, @QueryParam("user") String username) {
         Random randomGenerator = new Random();
         HttpSession session = req.getSession();
+        if(link == null){
+            return null;
+        }
         Url url = new Url(randomGenerator.nextInt(100));
         String encodedURL = urlParser.randomString(10);
         url.setShortUrl(encodedURL);
         url.setFullUrl(link);
         url.setCreatedAt(new Date());
-        boolean isCurrentUser = Helper.isUserLoggedIn(req);
-        if (isCurrentUser) {
-            url.setUser(Helper.getCurrentUser(req));
+        User user = PersistenceJPA.getSingletonInstance().getUserByUsername(username);
+        System.out.println(username);
+        if (user != null) {
+            url.setUser(user);
+            System.out.println("user added to url");
         }
-
-        // guardando en la db los datos 
-        EntityManager entityManager = PersistenceJPA.getSingletonInstance().createEntityManager();
-        try {
-            entityManager.getTransaction().begin();
-            entityManager.persist(url);
-            entityManager.getTransaction().commit();
-        } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
-            entityManager.getTransaction().rollback();
-        } finally {
-            entityManager.close();
-            // return isCreated;
-        }
-        //User user = new User();
-
-        System.out.print(url);
-
-        //retornar el codigo del URL 
+        PersistenceJPA.getSingletonInstance().create(url);
         return url;
     }
 
