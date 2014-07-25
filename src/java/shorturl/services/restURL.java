@@ -51,7 +51,7 @@ public class restURL {
     @Context
     private HttpServletRequest req;
     private HttpServletResponse resp;
-    private String lista;
+    private String lista="";
 
     @GET
     @Produces("application/json")
